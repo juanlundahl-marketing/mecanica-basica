@@ -12,11 +12,13 @@ import * as diagnostic from './views/diagnostic.js';
 import * as glossary from './views/glossary.js';
 import * as searchView from './views/search.js';
 import * as notfound from './views/notfound.js';
+import * as recorrido from './views/recorrido.js';
 
 const ROUTES = [
   [/^\/?$/, home, 'home'],
   [/^\/modulo\/([\w-]+)\/?$/, moduleView, 'lessons'],
   [/^\/leccion\/([\w-]+)\/?$/, lesson, 'lessons'],
+  [/^\/recorrido\/?$/, recorrido, 'tour'],
   [/^\/diagnostico\/?$/, diagnostic, 'diagnostic'],
   [/^\/glosario(?:\/([\w-]+))?\/?$/, glossary, 'glossary'],
   [/^\/buscar(?:\/(.*))?$/, searchView, 'search']
@@ -121,6 +123,7 @@ function buildChrome(ui, lang, meta, model) {
   const nav = h('nav', { class: 'main-nav', 'aria-label': ui.navAria },
     h('a', { href: '#/', 'data-key': 'home' }, ui.nav.home),
     h('a', { href: `#/modulo/${meta.modulos[0]}`, 'data-key': 'lessons' }, ui.nav.lessons),
+    h('a', { href: '#/recorrido', 'data-key': 'tour' }, ui.nav.tour),
     h('a', { href: '#/diagnostico', 'data-key': 'diagnostic' }, ui.nav.diagnostic),
     h('a', { href: '#/glosario', 'data-key': 'glossary' }, ui.nav.glossary));
 

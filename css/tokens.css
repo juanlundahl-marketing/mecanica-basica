@@ -1,0 +1,47 @@
+/* Tokens: Manual técnico. Claro por defecto "plano"; oscuro "tablero nocturno".
+   Sin preferencia guardada manda prefers-color-scheme; data-theme la fuerza. */
+:root {
+  --paper: #EEF2F3; --surface: #FFFFFF; --surface-2: #E3E9EC;
+  --ink: #0E1A24; --ink-2: #2C3B47; --muted: #4E5D69;
+  --grid: #D2DCE2; --grid-strong: #8FA1AE;
+  --line: #1B4F8A; --line-ink: #FFFFFF;
+  --signal: #8A5A00; --signal-fill: #F2B33D; --signal-ink: #0E1A24;
+  --alert: #B3261E; --alert-ink: #FFFFFF;
+  --ok: #1F6B45;
+  --focus: #C2410C;
+
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --measure: 104ch;
+  --gutter: 16px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 40px; --space-7: 64px;
+  --radius: 2px;
+  color-scheme: light;
+}
+@media (min-width: 768px) { :root { --gutter: 32px; } }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0B1218; --surface: #111C25; --surface-2: #172530;
+    --ink: #E3EAF0; --ink-2: #C3CFD8; --muted: #93A3B0;
+    --grid: #1A2833; --grid-strong: #4A6174;
+    --line: #6CC3E0; --line-ink: #0B1218;
+    --signal: #F2B33D; --signal-fill: #F2B33D; --signal-ink: #0B1218;
+    --alert: #EF6A62; --alert-ink: #0B1218;
+    --ok: #5CC48A; --focus: #FFB86B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0B1218; --surface: #111C25; --surface-2: #172530;
+  --ink: #E3EAF0; --ink-2: #C3CFD8; --muted: #93A3B0;
+  --grid: #1A2833; --grid-strong: #4A6174;
+  --line: #6CC3E0; --line-ink: #0B1218;
+  --signal: #F2B33D; --signal-fill: #F2B33D; --signal-ink: #0B1218;
+  --alert: #EF6A62; --alert-ink: #0B1218;
+  --ok: #5CC48A; --focus: #FFB86B;
+  color-scheme: dark;
+}

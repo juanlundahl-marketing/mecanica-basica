@@ -1,0 +1,366 @@
+{
+  "meta": {
+    "siteId": "mi-manual",
+    "version": "0.1.0",
+    "defaultLang": "es",
+    "langs": [
+      "es"
+    ],
+    "nivelesDisponibles": [
+      "basico"
+    ],
+    "modulos": [
+      "como-funciona",
+      "herramientas",
+      "mantenimiento",
+      "diagnostico",
+      "glosario"
+    ],
+    "nota": "Estructura i18n-ready: otros idiomas se suman como bloques hermanos de 'es' con las mismas claves. Los ids no se traducen."
+  },
+  "es": {
+    "ui": {
+      "siteTitle": "Mi Manual de Ejemplo",
+      "siteTagline": "Texto de ejemplo: una frase que explique qué aprende quien visita el sitio.",
+      "nav": {
+        "home": "Inicio",
+        "modules": "Módulos",
+        "glossary": "Glosario",
+        "search": "Buscar",
+        "about": "Acerca de"
+      },
+      "search": {
+        "placeholder": "Buscar lecciones, síntomas o términos",
+        "noResults": "No encontramos nada con esa búsqueda. Probá con otra palabra.",
+        "results": "Resultados"
+      },
+      "labels": {
+        "level": "Nivel",
+        "levelBasic": "Básico",
+        "safety": "Seguridad",
+        "checkManual": "Verificá en el manual",
+        "related": "Relacionado",
+        "summary": "Resumen",
+        "steps": "Pasos",
+        "tips": "Tips",
+        "commonMistakes": "Errores comunes",
+        "glossaryTerms": "Términos del glosario",
+        "frequency": "Frecuencia orientativa",
+        "beginnerCan": "Lo que puede hacer un principiante",
+        "mechanicWhen": "Cuándo ir al mecánico",
+        "probableCauses": "Causas probables",
+        "checkFirst": "Qué revisar primero",
+        "stopAndCall": "Cuándo parar y llamar a un profesional",
+        "lessons": "lecciones",
+        "backToTop": "Volver arriba",
+        "nextLesson": "Lección siguiente",
+        "prevLesson": "Lección anterior",
+        "inModule": "En este módulo"
+      },
+      "modules": {
+        "como-funciona": {
+          "title": "Módulo 1 (ejemplo)",
+          "description": "Descripción de ejemplo: reemplazala por la tuya."
+        },
+        "herramientas": {
+          "title": "Módulo 2 (ejemplo)",
+          "description": "Descripción de ejemplo: reemplazala por la tuya."
+        },
+        "mantenimiento": {
+          "title": "Módulo 3 (ejemplo)",
+          "description": "Descripción de ejemplo: reemplazala por la tuya."
+        },
+        "diagnostico": {
+          "title": "Diagnóstico (ejemplo)",
+          "description": "Descripción de ejemplo: reemplazala por la tuya."
+        },
+        "glosario": {
+          "title": "Glosario",
+          "description": "{terms} términos de ejemplo con definición corta y relacionados."
+        }
+      },
+      "footer": {
+        "text": "Material de estudio de ejemplo. Contenido ficticio.",
+        "rights": "Reemplazá este texto por el tuyo."
+      },
+      "legal": {
+        "title": "Aviso importante",
+        "text": "Este sitio es material educativo de carácter general. No reemplaza el manual de tu auto ni a un profesional. Los valores (torques, presiones, capacidades, intervalos) varían según marca, modelo y año: consultá siempre el manual del fabricante. Trabajar en un vehículo implica riesgos; si no estás seguro de una tarea, no la hagas y consultá a un mecánico. Sistemas como airbags, aire acondicionado, combustible a presión y alta tensión de híbridos y eléctricos requieren un profesional."
+      },
+      "verifyManualDefault": "Los valores y frecuencias exactos dependen de tu auto: consultá el manual."
+    },
+    "lecciones": [
+      {
+        "id": "ejemplo-leccion-1",
+        "modulo": "como-funciona",
+        "titulo": "Lección de ejemplo 1",
+        "nivel": "basico",
+        "resumen": "Resumen de ejemplo de una o dos oraciones para lección de ejemplo 1.",
+        "secciones": [
+          {
+            "titulo": "Qué es",
+            "texto": "Texto de ejemplo. Mencioná un término como bujía o aceite para ver el resaltado del glosario."
+          },
+          {
+            "titulo": "Cómo funciona",
+            "texto": "Segundo párrafo de ejemplo, sin cifras ni valores universales."
+          }
+        ],
+        "pasos": [
+          "Paso 1 de ejemplo",
+          "Paso 2 de ejemplo"
+        ],
+        "seguridad": [
+          "Advertencia de seguridad de ejemplo (en una lección real, con fuente oficial)."
+        ],
+        "verificarEnManual": {
+          "requerido": true,
+          "nota": "Valor de ejemplo a confirmar en el manual del auto."
+        },
+        "tips": [
+          "Tip de ejemplo."
+        ],
+        "erroresComunes": [
+          "Error común de ejemplo."
+        ],
+        "relacionados": [
+          "ejemplo-leccion-2"
+        ],
+        "glosario": [
+          "aceite-ejemplo",
+          "bujia-ejemplo"
+        ],
+        "fuentes": [
+          {
+            "texto": "Fuente de ejemplo (reemplazar por una real)",
+            "url": "https://example.com/manual"
+          }
+        ],
+        "verificado": "2026-01"
+      },
+      {
+        "id": "ejemplo-leccion-2",
+        "modulo": "como-funciona",
+        "titulo": "Lección de ejemplo 2",
+        "nivel": "basico",
+        "resumen": "Resumen de ejemplo de una o dos oraciones para lección de ejemplo 2.",
+        "secciones": [
+          {
+            "titulo": "Qué es",
+            "texto": "Texto de ejemplo. Mencioná un término como bujía o aceite para ver el resaltado del glosario."
+          },
+          {
+            "titulo": "Cómo funciona",
+            "texto": "Segundo párrafo de ejemplo, sin cifras ni valores universales."
+          }
+        ],
+        "pasos": [
+          "Paso 1 de ejemplo",
+          "Paso 2 de ejemplo"
+        ],
+        "seguridad": [
+          "Advertencia de seguridad de ejemplo (en una lección real, con fuente oficial)."
+        ],
+        "verificarEnManual": {
+          "requerido": true,
+          "nota": "Valor de ejemplo a confirmar en el manual del auto."
+        },
+        "tips": [
+          "Tip de ejemplo."
+        ],
+        "erroresComunes": [
+          "Error común de ejemplo."
+        ],
+        "relacionados": [
+          "ejemplo-leccion-1"
+        ],
+        "glosario": [
+          "aceite-ejemplo",
+          "bujia-ejemplo"
+        ],
+        "fuentes": [
+          {
+            "texto": "Fuente de ejemplo (reemplazar por una real)",
+            "url": "https://example.com/manual"
+          }
+        ],
+        "verificado": "2026-01",
+        "notaFuentes": "Nota opcional sobre las fuentes."
+      },
+      {
+        "id": "ejemplo-herramienta",
+        "modulo": "herramientas",
+        "titulo": "Herramienta de ejemplo",
+        "nivel": "basico",
+        "resumen": "Resumen de ejemplo de una o dos oraciones para herramienta de ejemplo.",
+        "secciones": [
+          {
+            "titulo": "Qué es",
+            "texto": "Texto de ejemplo. Mencioná un término como bujía o aceite para ver el resaltado del glosario."
+          },
+          {
+            "titulo": "Cómo funciona",
+            "texto": "Segundo párrafo de ejemplo, sin cifras ni valores universales."
+          }
+        ],
+        "pasos": [
+          "Paso 1 de ejemplo",
+          "Paso 2 de ejemplo"
+        ],
+        "seguridad": [
+          "Advertencia de seguridad de ejemplo (en una lección real, con fuente oficial)."
+        ],
+        "verificarEnManual": {
+          "requerido": true,
+          "nota": "Valor de ejemplo a confirmar en el manual del auto."
+        },
+        "tips": [
+          "Tip de ejemplo."
+        ],
+        "erroresComunes": [
+          "Error común de ejemplo."
+        ],
+        "relacionados": [],
+        "glosario": [
+          "aceite-ejemplo",
+          "bujia-ejemplo"
+        ],
+        "fuentes": [
+          {
+            "texto": "Fuente de ejemplo (reemplazar por una real)",
+            "url": "https://example.com/manual"
+          }
+        ],
+        "verificado": "2026-01"
+      },
+      {
+        "id": "ejemplo-mantenimiento",
+        "modulo": "mantenimiento",
+        "titulo": "Mantenimiento de ejemplo",
+        "nivel": "basico",
+        "resumen": "Resumen de ejemplo de una o dos oraciones para mantenimiento de ejemplo.",
+        "secciones": [
+          {
+            "titulo": "Qué es",
+            "texto": "Texto de ejemplo. Mencioná un término como bujía o aceite para ver el resaltado del glosario."
+          },
+          {
+            "titulo": "Cómo funciona",
+            "texto": "Segundo párrafo de ejemplo, sin cifras ni valores universales."
+          }
+        ],
+        "pasos": [
+          "Paso 1 de ejemplo",
+          "Paso 2 de ejemplo"
+        ],
+        "seguridad": [
+          "Advertencia de seguridad de ejemplo (en una lección real, con fuente oficial)."
+        ],
+        "verificarEnManual": {
+          "requerido": true,
+          "nota": "Valor de ejemplo a confirmar en el manual del auto."
+        },
+        "tips": [
+          "Tip de ejemplo."
+        ],
+        "erroresComunes": [
+          "Error común de ejemplo."
+        ],
+        "relacionados": [],
+        "glosario": [
+          "aceite-ejemplo",
+          "bujia-ejemplo"
+        ],
+        "fuentes": [
+          {
+            "texto": "Fuente de ejemplo (reemplazar por una real)",
+            "url": "https://example.com/manual"
+          }
+        ],
+        "verificado": "2026-01",
+        "mantenimiento": {
+          "frecuencia": "Según el manual del auto.",
+          "principiante": "Qué puede hacer un principiante (ejemplo).",
+          "profesional": "Cuándo ir al mecánico (ejemplo)."
+        }
+      },
+      {
+        "id": "ejemplo-sintoma",
+        "modulo": "diagnostico",
+        "titulo": "Síntoma de ejemplo",
+        "nivel": "basico",
+        "resumen": "Resumen de ejemplo de una o dos oraciones para síntoma de ejemplo.",
+        "secciones": [
+          {
+            "titulo": "Qué es",
+            "texto": "Texto de ejemplo. Mencioná un término como bujía o aceite para ver el resaltado del glosario."
+          },
+          {
+            "titulo": "Cómo funciona",
+            "texto": "Segundo párrafo de ejemplo, sin cifras ni valores universales."
+          }
+        ],
+        "pasos": [
+          "Paso 1 de ejemplo",
+          "Paso 2 de ejemplo"
+        ],
+        "seguridad": [
+          "Advertencia de seguridad de ejemplo (en una lección real, con fuente oficial)."
+        ],
+        "verificarEnManual": {
+          "requerido": true,
+          "nota": "Valor de ejemplo a confirmar en el manual del auto."
+        },
+        "tips": [
+          "Tip de ejemplo."
+        ],
+        "erroresComunes": [
+          "Error común de ejemplo."
+        ],
+        "relacionados": [],
+        "glosario": [
+          "aceite-ejemplo",
+          "bujia-ejemplo"
+        ],
+        "fuentes": [
+          {
+            "texto": "Fuente de ejemplo (reemplazar por una real)",
+            "url": "https://example.com/manual"
+          }
+        ],
+        "verificado": "2026-01",
+        "diagnostico": {
+          "causasProbables": [
+            "Causa A (ejemplo)",
+            "Causa B (ejemplo)"
+          ],
+          "revisarPrimero": [
+            "Revisión 1 (ejemplo)"
+          ],
+          "pararYLlamar": "Condición para parar y llamar a un profesional (ejemplo)."
+        }
+      }
+    ],
+    "glosario": [
+      {
+        "id": "aceite-ejemplo",
+        "termino": "Aceite",
+        "sinonimos": [
+          "lubricante"
+        ],
+        "definicion": "Definición corta de ejemplo.",
+        "relacionado": [
+          "bujia-ejemplo"
+        ]
+      },
+      {
+        "id": "bujia-ejemplo",
+        "termino": "Bujía",
+        "definicion": "Definición corta de ejemplo.",
+        "relacionado": [
+          "aceite-ejemplo"
+        ]
+      }
+    ]
+  }
+}

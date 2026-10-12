@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mecánica Básica</title>
+<meta name="description" content="Material de estudio para entender cómo funciona un auto, qué mantener y qué mirar cuando algo no anda bien.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mecánica Básica">
+<meta property="og:title" content="Mecánica Básica: entendé cómo funciona tu auto">
+<meta property="og:description" content="Lecciones con fuentes, glosario y señales de alerta para entender, mantener y diagnosticar un auto. Material educativo en español rioplatense.">
+<!-- og:image absoluta: depende del nombre final del repo y de GitHub Pages (https://juanlundahl-marketing.github.io/mecanica-basica/). Si cambia el repo, actualizar esta URL. -->
+<meta property="og:image" content="https://juanlundahl-marketing.github.io/mecanica-basica/assets/img/og-mecanica-basica.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tarjeta de Mecánica Básica: manual para principiantes sobre cómo funciona un auto, con un engranaje y los temas frenos, motor, eléctrico, suspensión e híbridos.">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231B4F8A'/%3E%3Cpath d='M6 30a16 16 0 1128 0' fill='none' stroke='white' stroke-width='3'/%3E%3Cpath d='M20 26L29 14' stroke='%23F2B33D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/diagrams.css">
+<script>
+  // Tema guardado (si existe) antes del primer pintado; sin preferencia manda el sistema.
+  try { var t = localStorage.getItem('mb-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" id="skip" href="#main"></a>
+<header class="site-head" id="site-head"></header>
+<div class="search-bar" id="search-bar"></div>
+<p class="vh" role="status" aria-live="polite" id="live-search"></p>
+<p class="vh" role="status" aria-live="polite" id="live-route"></p>
+<main id="main" tabindex="-1"></main>
+<footer class="site-foot" id="site-foot"></footer>
+<noscript><p style="padding:16px">Este sitio necesita JavaScript para mostrar las lecciones.</p></noscript>
+<script type="module" src="js/main.js"></script>
+<script>
+  // El enlace de salto no usa hash (lo usa el router): mueve el foco al contenido.
+  document.getElementById('skip').addEventListener('click', function (e) { e.preventDefault(); var m = document.getElementById('main'); m.focus(); m.scrollIntoView(); });
+</script>
+</body>
+</html>

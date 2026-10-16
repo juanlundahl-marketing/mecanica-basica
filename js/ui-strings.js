@@ -18,7 +18,7 @@ export const EXTRA = {
       artAria: 'Ilustración decorativa de un reloj de tablero'
     },
     home: {
-      tour: { label: 'Recorrido 3D', title: 'Del taller a la ruta', text: 'Una maqueta que se recorre con el scroll: tres escenas y cada punto numerado abre una lección.', cta: 'Hacer el recorrido' },
+      tour: { label: 'Recorrido', title: 'Del taller a la ruta', text: 'Un recorrido por scroll con tres escenas: en cada una, las paradas abren una lección.', cta: 'Hacer el recorrido' },
       catalog: 'Catálogo de módulos',
       howTitle: 'Cómo usar este sitio',
       how: [
@@ -53,54 +53,29 @@ export const EXTRA = {
       date: '{month} de {year}',
       months: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
     },
-    // Recorrido 3D por scroll (#/recorrido). Los títulos de las lecciones salen de content.json; acá solo van los textos del recorrido.
+    // Recorrido por scroll (#/recorrido). Los títulos de las lecciones salen de content.json; acá solo van los textos del recorrido.
     recorrido: {
-      title: 'Recorrido 3D: del taller a la ruta',
-      skip: 'Saltar el recorrido',
-      loading: 'Armando la maqueta…',
-      fallback: ['Tu navegador no pudo mostrar la maqueta 3D. Las lecciones siguen disponibles en las tarjetas y en el ', 'índice', '.'],
-      mapAria: 'Estaciones del recorrido',
-      intro: {
-        kicker: 'Recorrido 3D por scroll', title: 'Del taller a la ruta',
-        lead: 'Bajá con la ruedita, el teclado o el dedo: la cámara recorre una maqueta con tres escenas y cada punto numerado abre una lección de Mecánica Básica.',
-        start: 'Empezar el recorrido', all: 'Ver todas las lecciones',
-        chipsAria: 'Resumen', chips: ['{stations} estaciones', '{lessons} lecciones', 'Títulos del sitio'],
-        hint: 'Si tu sistema pide menos movimiento, la cámara salta de escena en escena sin animar y los despieces quedan abiertos.'
-      },
-      stationWord: 'Estación',
       stations: [
-        {
-          id: 'taller', map: 'Taller', kicker: 'Cómo funciona y herramientas', title: 'El taller',
-          lead: 'Con el auto levantado se ve cómo está hecho. Cada punto abre la lección de ese sistema; en la pared, las herramientas de un taller casero.',
-          hint: 'Despiece del motor al bajar: cárter, bloque del motor, junta de culata y culata.',
-          lessons: [['motor-4-tiempos', 'Motor'], ['frenos', 'Frenos'], ['transmision', 'Transmisión'], ['suspension', 'Suspensión'], ['sistema-electrico', 'Eléctrico'], ['herr-kit-basico', 'Herramientas']]
-        },
-        {
-          id: 'concesionaria', map: 'Concesionaria', kicker: 'Tipos de auto y energía', title: 'Concesionaria y surtidor',
-          lead: 'Antes de manejar conviene saber qué auto tenés y con qué se mueve: nafta, gasoil, GNC o electricidad.',
-          hint: 'Despiece del auto en exhibición: batería de alta tensión, carrocería y habitáculo.',
-          lessons: [['he-tipos-hev-phev-bev-mild', 'Tipos'], ['he-alta-tension-componentes', 'Alta tensión'], ['he-carga-segura-casa-publica', 'Carga'], ['ar-combustibles-nafta-gasoil', 'Combustibles'], ['ar-gnc-uso-seguro', 'GNC'], ['mant-intervalos-uso-severo', 'Mantenimiento']]
-        },
-        {
-          id: 'ruta', map: 'Ruta', kicker: 'Diagnóstico y seguridad en la calle', title: 'La ruta',
-          lead: 'En la calle el auto avisa con luces, ruidos y sensaciones. Acá están las lecciones para leer esas señales y llegar preparado a la revisión técnica.',
-          hint: 'Despiece de la rueda pinchada: disco de freno, llanta y cubierta.',
-          lessons: [['diag-luces-colores-airbag-tpms', 'Tablero'], ['diag-ruidos-pistas', 'Ruidos'], ['frenos-senales-no-manejar', 'Frenos'], ['susp-pinchadura-cambio-rueda', 'Pinchadura'], ['ar-vtv-rto-revision-tecnica', 'VTV'], ['ar-papeles-y-revision-antes-de-viajar', 'Antes de viajar']]
-        }
+        { id: 'taller', map: 'Taller', title: 'El taller' },
+        { id: 'concesionaria', map: 'Concesionaria', title: 'Concesionaria y surtidor' },
+        { id: 'ruta', map: 'Ruta', title: 'La ruta' }
       ],
-      outro: {
-        kicker: 'Fin del recorrido', title: 'Seguí en el sitio',
-        lead: 'El recorrido muestra una parte de las lecciones. El resto está en los módulos del sitio: cómo funciona, herramientas, mantenimiento y diagnóstico.',
-        site: 'Ir al inicio', top: 'Volver arriba'
-      },
       index: { title: 'Índice del recorrido', text: 'Las mismas lecciones, sin animación ni 3D.' },
-      // Rótulos del despiece y letreros dibujados dentro de la escena
-      labels: {
-        engine: { sump: 'Cárter', block: 'Bloque del motor', gasket: 'Junta de culata', head: 'Culata' },
-        car: { battery: 'Batería de alta tensión', body: 'Carrocería', cabin: 'Habitáculo' },
-        wheel: { disc: 'Disco de freno', rim: 'Llanta', tire: 'Cubierta' }
+      // Recorrido continuo con fotogramas (#/recorrido). Los nombres de estación salen de stations[] (id 'ruta' = pista del render).
+      cont: {
+        title: 'Recorrido: del taller a la ruta',
+        skip: 'Saltar el recorrido e ir a la lista de lecciones',
+        kicker: 'Recorrido por scroll', h1: 'Del taller a la ruta',
+        lead: 'Bajá con la ruedita, el teclado o el dedo: la cámara pasa por tres escenas y en cada parada se abre una lección de Mecánica Básica.',
+        toList: 'Ver la lista de lecciones',
+        canvasAria: 'Animación del recorrido: la cámara avanza por el taller, la concesionaria y la ruta. La lista de paradas es equivalente.',
+        loading: 'Cargando {p} %', ready: 'Listo',
+        panel: 'Estaciones y paradas', stationsTitle: 'Estaciones', stopsTitle: 'Paradas',
+        stopOf: 'Parada {n} de {total}', onTheWay: 'En camino', lesson: 'Lección',
+        goTo: 'Ir a la estación', progressAria: 'Avance del recorrido',
+        staticTitle: 'Paradas del recorrido', staticText: 'Una imagen fija por parada, sin animación de scroll.',
+        imgAlt: '{station}: escena de la parada «{lesson}»'
       },
-      signs: { dealer: 'CONCESIONARIA', service: 'SERVICIO', cng: 'GNC', vtv: 'VTV' }
     },
     diagrams: {
       figure: 'FIG.',

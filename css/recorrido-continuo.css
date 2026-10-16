@@ -1,0 +1,51 @@
+/* Recorrido continuo con fotogramas (#/recorrido). Solo tokens del sitio; sin tokens nuevos. */
+.rf-head { padding-top: var(--space-5); padding-bottom: var(--space-4); }
+.rf-head h1 { margin: 0 0 .3em; }
+.rf-head .lead { max-width: var(--measure); }
+.rf-tour { position: relative; height: calc(var(--rf-total, 8000) * 1px + 100vh); height: calc(var(--rf-total, 8000) * 1px + 100svh); }
+.rf-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; overflow: clip; background: var(--paper); }
+.rf-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.rf-loader { position: absolute; left: var(--space-3); top: var(--space-3); z-index: 6; display: flex; gap: var(--space-2); align-items: center; padding: 4px 10px; background: var(--surface); color: var(--ink); border: 1px solid var(--grid-strong); font: 500 .78rem var(--font-mono); transition: opacity .4s .8s; }
+.rf-loader.is-done { opacity: 0; pointer-events: none; }
+.rf-bar { width: 90px; height: 4px; background: var(--grid); overflow: hidden; }
+.rf-bar i { display: block; height: 100%; background: var(--focus); transform-origin: 0 50%; transform: scaleX(0); }
+.rf-caption { position: absolute; left: var(--space-3); bottom: var(--space-4); z-index: 6; margin: 0; max-width: min(560px, calc(100% - 24px)); padding: 8px 14px; background: var(--surface); color: var(--ink); border: 1px solid var(--grid-strong); border-left: 4px solid var(--focus); font-size: .95rem; }
+.rf-caption a { color: var(--line); font-weight: 600; }
+.rf-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: 6; background: var(--grid); }
+.rf-progress i { display: block; height: 100%; background: var(--line); transform-origin: 0 50%; transform: scaleX(0); }
+.rf-side { position: absolute; right: var(--space-3); top: var(--space-3); z-index: 7; width: min(340px, calc(100% - 24px)); max-height: calc(100svh - 24px); overflow: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--grid-strong); padding: 0 14px 12px; }
+.rf-side summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font: 600 .85rem var(--font-mono); text-transform: uppercase; letter-spacing: .04em; }
+.rf-side:not([open]) { padding-bottom: 0; }
+.rf-side h2 { font: 600 .74rem var(--font-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: var(--space-3) 0 var(--space-2); }
+.rf-stations, .rf-stops { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.rf-stations { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+.rf-stations button { width: 100%; min-height: 44px; padding: .3em .6em; font: 600 .85rem var(--font-body); background: transparent; color: var(--ink); border: 1.5px solid var(--grid-strong); cursor: pointer; }
+.rf-stations button[aria-current="step"] { background: var(--line); color: var(--line-ink); border-color: var(--line); }
+.rf-stops a { display: flex; gap: 8px; align-items: baseline; min-height: 44px; padding: 6px 8px; border: 1px solid var(--grid); color: var(--ink); text-decoration: none; font-size: .9rem; line-height: 1.3; }
+.rf-stops a b { font: 600 .75rem var(--font-mono); color: var(--line); min-width: 1.6em; }
+.rf-stops a:hover, .rf-stops a[aria-current="step"] { border-color: var(--focus); }
+.rf-stops a[aria-current="step"] { background: var(--surface-2); }
+/* Compartido (antes en recorrido.css): enlace de salto, tarjeta de portada e índice */
+.rc-skip { position: fixed; left: 12px; top: -140px; z-index: 60; padding: 10px 16px; background: var(--ink); color: var(--paper); font: 600 .9rem var(--font-mono); text-decoration: none; }
+.rc-skip:focus { top: 12px; }
+.rc-promo { padding: 18px 20px; margin-bottom: 0; border-top: 3px solid var(--line); }
+.rc-promo h2 { margin: 2px 0 6px; font-size: clamp(1.5rem, 3vw, 2rem); }
+.rc-promo p { max-width: 62ch; }
+.rc-promo .label { margin: 0; }
+@media (max-width: 599px) { .rc-promo .btn { width: 100%; } }
+.rc-indice { padding-top: var(--space-6); padding-bottom: var(--space-5); margin-top: var(--space-5); border-top: 1px solid var(--grid-strong); }
+.rc-indice:focus { outline: none; }
+.rc-indice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 24px; }
+.rc-indice-list { margin: 0; padding-left: 1.3em; }
+.rc-indice-list li { margin: .35em 0; }
+/* modo estático (prefers-reduced-motion) */
+.rf-static { padding-top: var(--space-5); }
+.rf-st-list { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: var(--space-4); }
+.rf-st-list figure { margin: 0; background: var(--surface); border: 1px solid var(--grid-strong); }
+.rf-st-list img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--surface-2); }
+.rf-st-list figcaption { padding: 8px 12px; font-weight: 600; }
+@media (max-width: 760px) {
+  .rf-side { right: var(--space-3); left: var(--space-3); top: auto; bottom: var(--space-3); width: auto; max-height: 55svh; }
+  .rf-caption { bottom: 72px; left: var(--space-3); right: var(--space-3); max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) { .rf-loader { transition: none; } }

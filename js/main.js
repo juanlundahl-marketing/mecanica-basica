@@ -12,7 +12,7 @@ import * as diagnostic from './views/diagnostic.js';
 import * as glossary from './views/glossary.js';
 import * as searchView from './views/search.js';
 import * as notfound from './views/notfound.js';
-import * as recorrido from './views/recorrido.js';
+import * as recorrido from './views/recorrido-continuo.js';
 
 const ROUTES = [
   [/^\/?$/, home, 'home'],

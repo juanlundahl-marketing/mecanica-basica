@@ -11,6 +11,7 @@ import * as lesson from './views/lesson.js';
 import * as diagnostic from './views/diagnostic.js';
 import * as glossary from './views/glossary.js';
 import * as searchView from './views/search.js';
+import * as credits from './views/creditos.js';
 import * as notfound from './views/notfound.js';
 import * as recorrido from './views/recorrido-continuo.js';
 
@@ -21,6 +22,7 @@ const ROUTES = [
   [/^\/recorrido\/?$/, recorrido, 'tour'],
   [/^\/diagnostico\/?$/, diagnostic, 'diagnostic'],
   [/^\/glosario(?:\/([\w-]+))?\/?$/, glossary, 'glossary'],
+  [/^\/creditos\/?$/, credits, 'credits'],
   [/^\/buscar(?:\/(.*))?$/, searchView, 'search']
 ];
 
@@ -172,6 +174,7 @@ function buildChrome(ui, lang, meta, model) {
     h('section', { 'aria-labelledby': 'legal-t' },
       h('h2', { id: 'legal-t' }, ui.legal.title || ui.footer.legalTitle), h('p', { class: 'legal' }, ui.legal.text)),
     h('p', { class: 'legal-small' }, `${ui.footer.text} ${ui.footer.rights}`),
+    h('p', { class: 'legal-small' }, h('a', { href: '#/creditos' }, ui.footer.creditsLink)),
     ui.footer.sources ? h('p', { class: 'legal-small' }, ui.footer.sources) : null));
   document.getElementById('skip').textContent = ui.skip;
 }

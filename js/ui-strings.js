@@ -45,7 +45,31 @@ export const EXTRA = {
       jump: 'Saltar a la letra', related: 'Ver también', usedIn: 'Aparece en', count: ['1 término', '{n} términos'], none: 'Ningún término coincide.', code: 'GL'
     },
     notFound: { code: '404', title: 'No encontramos esa página', text: 'La dirección no existe o cambió. Volvé al inicio o usá el buscador.', home: 'Volver al inicio' },
-    footer: { legalTitle: 'Aviso legal', sources: 'El contenido es orientativo y se verifica con fuentes externas; no reemplaza al manual de tu auto ni a un profesional.' },
+    // Página de créditos (#/creditos). Fuente: _proceso/realismo/creditos.md (v3). Atribución CC BY 4.0 de los modelos 3D usados en el recorrido.
+    credits: {
+      title: 'Créditos',
+      intro: 'Las escenas del recorrido usan modelos 3D de terceros publicados en Sketchfab con licencia Creative Commons Atribución 4.0 (CC BY 4.0). Acá van sus autores, fuentes y las modificaciones que les hicimos.',
+      newTab: '(se abre en una pestaña nueva)',
+      modelsTitle: 'Modelos 3D (CC BY 4.0)',
+      labels: { author: 'Autor', source: 'Fuente', license: 'Licencia', changes: 'Modificaciones' },
+      sourceLink: 'Ver en Sketchfab',
+      license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+      models: [
+        { title: "Ace '11 - Low Poly model", author: 'Daniel Zhabotinsky', authorUrl: 'https://sketchfab.com/DanielZhabotinsky', url: 'https://sketchfab.com/3d-models/ace-11-low-poly-model-055ff8a21b8d4d279debca089e2fafcd', changes: 'Insignias y textos de patente quitados, una rueda quitada, materiales rehechos.' },
+        { title: 'Tesla M3 model', author: 'wintrez', authorUrl: 'https://sketchfab.com/wintrez', url: 'https://sketchfab.com/3d-models/tesla-m3-model-3a602469d7874d1397efa67182198705', changes: 'Emblemas y textos de patente quitados, logo de llantas cubierto, materiales y escala ajustados.' },
+        { title: '2010s Compact SUV', author: 'MaG80', authorUrl: 'https://sketchfab.com/MaG80', url: 'https://sketchfab.com/3d-models/2010s-compact-suv-4d5566ec52ec4385a0d2d2754c189490', changes: 'Textura de rejilla reemplazada, sombra horneada quitada, materiales y escala ajustados.' },
+        { title: 'Compact sedan', author: 'MaG80', authorUrl: 'https://sketchfab.com/MaG80', url: 'https://sketchfab.com/3d-models/compact-sedan-2ce316358582406691fcea73d15009ef', changes: 'Textura de rejilla reemplazada, sombra horneada quitada, materiales y escala ajustados.' },
+        { title: "Lightbody '90 MD Pickup - Low poly model", author: 'Daniel Zhabotinsky', authorUrl: 'https://sketchfab.com/DanielZhabotinsky', url: 'https://sketchfab.com/3d-models/lightbody-90-md-pickup-low-poly-model-3b3ac59245c44872b06ad85673be9643', changes: 'Insignias y textos de patente quitados, materiales rehechos.' }
+      ],
+      cc0Title: 'Otros recursos (CC0)',
+      cc0Intro: 'Estos recursos son de dominio público (CC0 1.0) y no exigen atribución; los mencionamos como cortesía.',
+      cc0: [
+        { text: 'Iluminación (HDRI) y objetos del taller de Poly Haven, como autoshop_01, metal_toolbox, tool_cart y old_tyre.', url: 'https://polyhaven.com/', host: 'polyhaven.com' },
+        { text: 'Texturas de ambientCG, como Concrete034, PaintedMetal004, Metal027 y Asphalt033.', url: 'https://ambientcg.com/', host: 'ambientcg.com' }
+      ],
+      note: 'Los modelos de esta página son versiones modificadas de los originales.'
+    },
+    footer: { creditsLink: 'Créditos', legalTitle: 'Aviso legal', sources: 'El contenido es orientativo y se verifica con fuentes externas; no reemplaza al manual de tu auto ni a un profesional.' },
     sources: {
       title: 'Fuentes consultadas',
       verified: 'Verificado: {date}',

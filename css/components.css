@@ -164,3 +164,19 @@ a.term:hover, a.term:focus-visible { color: var(--line); }
 mark { background: color-mix(in srgb, var(--signal-fill) 55%, transparent); color: inherit; padding: 0 2px; border-radius: 3px; }
 .notfound { text-align: left; }
 .notfound .big { font: 700 clamp(4rem, 14vw, 8rem)/1 var(--font-display); color: var(--line); margin: 0; }
+
+/* Créditos (#/creditos) */
+.credits h1 { margin-bottom: 8px; }
+.credits h2 { font: 700 .85rem var(--font-mono); text-transform: var(--label-case); letter-spacing: .06em; color: var(--muted); margin: var(--space-5) 0 10px; }
+.credits p, .credits dd { max-width: var(--measure); }
+.credits-list, .credits-cc0 { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; max-width: var(--measure); }
+.credits-cc0 { gap: 8px; }
+.credit { padding: 14px 16px; border: 1px dashed var(--grid-strong); border-radius: var(--r-md); background: var(--surface); }
+.credit h3 { margin: 0 0 8px; font-size: 1.05rem; overflow-wrap: anywhere; }
+.credit dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: .95rem; }
+.credit dt { font: 700 .75rem var(--font-mono); text-transform: var(--label-case); letter-spacing: .06em; color: var(--muted); padding-top: .2em; }
+.credit dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.credits a { color: var(--line); text-decoration: underline; text-underline-offset: 2px; }
+.credits a:hover { text-decoration-thickness: 2px; }
+.credits-note { color: var(--muted); font-size: .9rem; margin-top: var(--space-4); }
+@media (max-width: 520px) { .credit dl { grid-template-columns: 1fr; gap: 0; } .credit dd { margin-bottom: 8px; } }

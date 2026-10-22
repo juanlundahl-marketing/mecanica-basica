@@ -124,7 +124,8 @@ export const EXTRA = {
     perf: {   // overlay de diagnóstico (?perf=1)
       title: 'Diagnóstico de fluidez', stat: 'ms: media / p95 / máx.', aria: 'Panel de diagnóstico de fluidez del recorrido', copy: 'Copiar resumen', reset: 'Reiniciar', copied: 'Resumen copiado',
       hint: 'Alt+Mayús+P copia el resumen. Scrolleá unos segundos, copiá y pegá los números.',
-      frame: 'Intervalo entre cuadros', draw: 'Dibujo', hs: 'Puntos', stalls: 'Cuadros con otro fotograma que el objetivo', lag: 'desfase medio (fotogramas)',
+      frame: 'Intervalo entre cuadros', draw: 'Dibujo', hs: 'Puntos', stalls: 'Cuadros fuera del objetivo (o de su celda al ir rápido)', lag: 'desfase medio por cuadro (fotogramas)',
+      seq: 'Cuadros por secuencia', light: 'liviana', fullSeq: 'completa', settle: 'Latencia al detenerse hasta la 1920',
       canvas: 'Canvas', cache: 'Caché', keys: 'claves', queue: 'En vuelo', net: 'red', decode: 'decodificación', speed: 'velocidad (fotogramas/cuadro)', frameNow: 'Fotograma'
     },
     sheet: {

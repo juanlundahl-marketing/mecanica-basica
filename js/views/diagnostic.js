@@ -1,7 +1,7 @@
-import { h } from '../lib/dom.js?v=6';
-import { norm, plural, hasWordStart } from '../lib/text.js?v=6';
-import { disclosure } from '../lib/components.js?v=6';
-import { ico } from '../lib/icons.js?v=6';
+import { h } from '../lib/dom.js?v=7';
+import { norm, plural, hasWordStart } from '../lib/text.js?v=7';
+import { disclosure } from '../lib/components.js?v=7';
+import { ico } from '../lib/icons.js?v=7';
 
 export function render(el, ctx) {
   const { ui, model } = ctx;

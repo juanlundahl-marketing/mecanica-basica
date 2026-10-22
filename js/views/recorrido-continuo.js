@@ -2,12 +2,12 @@
 // Motor: decodificación fuera del hilo (createImageBitmap, recortado al área visible), precarga priorizada alrededor del fotograma
 // actual, un solo rAF con inercia independiente de los FPS, canvas a DPR acotado. Con prefers-reduced-motion: láminas fijas por parada.
 // El contenido es accesible sin el canvas: tarjeta/riel con teclado + índice de paradas al pie (en home.js).
-import { h } from '../lib/dom.js?v=6';
-import { ico } from '../lib/icons.js?v=6';
-import { plural } from '../lib/text.js?v=6';
-import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=6';
-import { openDetail } from '../lib/hoja-detalle.js?v=6';
-import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=6';
+import { h } from '../lib/dom.js?v=7';
+import { ico } from '../lib/icons.js?v=7';
+import { plural } from '../lib/text.js?v=7';
+import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=7';
+import { openDetail } from '../lib/hoja-detalle.js?v=7';
+import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=7';
 
 const pad = (n) => String(n).padStart(2, '0');
 const fill = (t, o) => t.replace(/\{(\w+)\}/g, (_, k) => o[k]);
@@ -110,27 +110,33 @@ export function mountTour(host, ctx, stops, opts = {}) {
   const g = canvas.getContext('2d', { alpha: false });
 
   // ---------- Estado ----------
-  const lite = matchMedia('(max-width: 760px)').matches || !!(navigator.connection && (navigator.connection.saveData || /(^|-)2g$/.test(navigator.connection.effectiveType || '')));
-  const STEP = lite ? 4 : 1;                       // modo ligero: 1 de cada 4 fotogramas
-  const snap = (f) => 1 + Math.floor((Math.max(1, Math.min(N, f)) - 1) / STEP) * STEP;
+  const saver = !!(navigator.connection && (navigator.connection.saveData || /(^|-)2g$/.test(navigator.connection.effectiveType || '')));
+  const lite = matchMedia('(max-width: 760px)').matches || saver;
+  const STEP = lite ? 2 : 1;                       // modo ligero: 1 de cada 2 fotogramas, solo secuencia liviana
+  /* Con la cámara rápida se muestra 1 de cada G fotogramas (G = 2 desde 1 fotograma/cuadro, 3 desde 2,5; vuelve a 1 por debajo de 0,7, con
+     histéresis): el objetivo se cuantiza a esa grilla, así siempre es un fotograma liviano exacto ya decodificado, sin desfase. */
+  let G = 1, QS = STEP;
+  const snap = (f) => 1 + Math.floor((Math.max(1, Math.min(N, f)) - 1) / QS) * QS;
   const PERF = /[?&]perf=1/.test(location.search + location.hash);   // overlay de diagnóstico (js/lib/perf-overlay.js), solo con ?perf=1
   const rec = (a, v) => { a.push(v); if (a.length > 1500) a.splice(0, 500); };   // muestras acotadas (costo O(1) amortizado)
-  const stats = { loaded: 0, drawn: 0, miss: 0, lag: 0, jumps: 0, dts: [], draws: [], hss: [], dec: [], net: [], gen: 0 };
+  const stats = { why: {}, loaded: 0, drawn: 0, miss: 0, lag: 0, lo: 0, full: 0, jumps: 0, dts: [], draws: [], hss: [], dec: [], net: [], settle: [], gen: 0 };
   let W = 1, H = 1, tourTop = 0, total = 0, HPX = 1, railW = 1, paper = '#F2EDE6';
-  let BW = 1920, BH = 1080, portrait = false, heroRect = null, tourRect = null, band = null, paperA0 = 'rgba(242,237,230,0)'; // fotograma completo decodificado a BW×BH; rectángulos de dibujo
-  let CAP = 24, dead = false;
-  /* Carga en dos niveles: (1) blobs WebP comprimidos (~53 kB c/u) en una ventana amplia sesgada hacia adelante, con tope de memoria;
-     (2) ImageBitmap decodificados (8 MB c/u a 1080p) solo para los fotogramas que se van a mostrar: el actual y los siguientes sobre la
-     trayectoria, espaciados según la velocidad (si la cámara avanza 6 fotogramas por cuadro, decodificar los intermedios no sirve). */
-  const bm = new Map(), kf = new Map(), blobs = new Map(), net = new Map(), dec = new Set();
-  const KSTEP = lite ? 24 : 12, KW = lite ? 384 : 480;
-  const KEYS = []; for (let i = 1; i <= N; i += KSTEP) KEYS.push(i); stops.forEach((s) => KEYS.push(s.mid));
-  const KEYSET = new Set(KEYS);
-  const MAXNET = lite ? 4 : 6, MAXDEC = lite ? 2 : 3, canFetch = location.protocol.startsWith('http');
-  const AHB = lite ? 60 : 240, BHB = lite ? 16 : 60;           // ventana de blobs, en pasos: adelante / atrás
-  const DEC_A = lite ? 6 : 10, DEC_B = lite ? 2 : 3;            // bitmaps a tener listos sobre la trayectoria
-  const BLOB_CAP = (lite ? 16 : 48) * 1048576;
-  let blobBytes = 0, decN = 0, vf = 0, netMs = 120, decMs = 40;  // vf: fotogramas por cuadro (media móvil); latencias medias de red y decodificación
+  let portrait = false, heroRect = null, tourRect = null, band = null, paperA0 = 'rgba(242,237,230,0)'; // rectángulos de dibujo
+  let dead = false;
+  /* Dos secuencias. LIVIANA (assets/recorrido-lo, 960×540, ~20 kB): se precarga entera (blobs en memoria, por cercanía al fotograma actual)
+     y se decodifica bajo demanda a ImageBitmap (~2 MB c/u, caché por distancia): es la que se ve mientras la cámara se mueve, siempre el
+     fotograma exacto. COMPLETA (assets/recorrido, 1920×1080): solo cuando la cámara se detiene (velocidad < SLOW durante SETTLE ms) se pide
+     y decodifica el fotograma exacto y se funde en 80 ms. Modo ligero: solo la liviana. */
+  const LO_URL = (i) => `assets/recorrido-lo/f_${String(i).padStart(4, '0')}.webp?v=1`;
+  const FULL = !lite;
+  const lo = new Map(), full = new Map(), loBlob = new Map(), fullBlob = new Map(), net = new Map(), dec = new Set();
+  const LO_CAP = lite ? 30 : 150, FULL_CAP = 1, FULL_BLOB_CAP = 6;         // ≈ 150 × 2,07 MB + 8,3 MB + blobs (~31 MB) ≈ 350 MB en escritorio
+  const LO_A = lite ? 20 : 105, LO_B = lite ? 8 : 40;                      // ventana de bitmaps livianos (en pasos): adelante / atrás
+  const NET_A = saver ? 120 : N, NET_B = saver ? 30 : N;                   // precarga de blobs livianos: total, salvo ahorro de datos
+  const MAXNET = lite ? 4 : 8, MAXDEC = lite ? 2 : 4, canFetch = location.protocol.startsWith('http');
+  const SLOW = 0.2, SETTLE = 130, FADE = 80;                               // fotogramas/cuadro, ms
+  let loNeed = 0; for (let i = 1; i <= N; i += STEP) loNeed++;
+  let loBytes = 0, decN = 0, vf = 0, slowSince = -1e9, settleT = 0, fadeF = -1, fadeT0 = 0, idleT = 0;
   let cardBox = null, placeCache = new Map();   // tarjeta: rectángulo real (con su desplazamiento) y posición elegida por parada
   let HS = [], blocks = [], blockDirty = true, DP = 1, CW = 1, CH = 1, headH = 0;   // puntos «+» y geometría cacheada (en px de CSS)
   let yT = 0, yC = 0, hp = 0, curF = 1, dir = 1, raf = 0, last = 0, dirty = true, lastF = -1, shown = -2, est = '', liveT = 0, failed = 0;
@@ -167,14 +173,6 @@ export function mountTour(host, ctx, stops, opts = {}) {
     const s0 = Math.min((portrait ? 1.08 : 0.92) * W / iw, Math.max(room, H * 0.3) / ih);
     heroRect = portrait ? (() => { const s1 = 1.45 * W / iw; return { x: (W - iw * s1) / 2 - W * .06, y: hb + Math.max(0, (room - ih * s1) / 2), w: iw * s1, h: ih * s1 }; })()
       : { x: (W - iw * s0) / 2, y: hb, w: iw * s0, h: ih * s0 };
-    // Escritorio: se decodifica a 1920 sin redimensionar (medido: resizeQuality 'high' bloquea el hilo principal, rAF de 17 a 60 ms) y el canvas
-    // escala en GPU. Modo ligero (móvil): se redimensiona para cuidar memoria, con resizeQuality 'low' (medido: 'medium' también bloquea, rAF 17 a 50 ms).
-    const nbw = lite ? Math.min(1920, Math.round(tourRect.w)) : 1920, nbh = Math.round(nbw * 9 / 16);
-    if (Math.abs(nbw - BW) > 64 || !bm.size && !kf.size) {
-      BW = nbw; BH = nbh;
-      stats.gen++; for (const v of bm.values()) v.b.close(); bm.clear(); for (const v of kf.values()) v.b.close(); kf.clear();   // los blobs no dependen del tamaño: se conservan
-    }
-    CAP = Math.max(DEC_A + DEC_B + 4, Math.min(48, Math.floor((lite ? 60e6 : 190e6) / (BW * BH * 4))));
     segs.forEach((el, j) => {
       const [a, b] = ESTACIONES[estList[j]], y0 = j === 0 ? 0 : yOfFrame(a), y1 = j === estList.length - 1 ? total : yOfFrame(Math.min(N, b + 1));
       el.style.width = `${(y1 - y0) / total * 100}%`;
@@ -186,107 +184,113 @@ export function mountTour(host, ctx, stops, opts = {}) {
   }
 
   // ---------- Carga (red) y decodificación (createImageBitmap, fuera del hilo) con colas priorizadas ----------
-  async function source(i, signal, prio) {
+  async function source(i, kind, signal, prio) {
+    const url = kind === 'l' ? LO_URL(i) : FR(i);
     if (canFetch) {
-      let r = null; if (i === 1 && window.__mbF1) { r = await window.__mbF1; window.__mbF1 = null; if (r && !r.ok) r = null; } // respuesta pedida desde el <head>
-      if (!r) r = await fetch(FR(i), { signal, priority: prio });
+      let r = null; if (kind === 'f' && i === 1 && window.__mbF1) { r = await window.__mbF1; window.__mbF1 = null; if (r && !r.ok) r = null; } // respuesta pedida desde el <head>
+      if (!r) r = await fetch(url, { signal, priority: prio });
       if (!r.ok) throw new Error(r.status); return r.blob();
     }
-    const im = new Image(); im.src = FR(i); await im.decode(); return im;   // respaldo file:// (sin fetch)
-  }
-  async function bitmapOf(src, w, hh, q) {
-    const o = w >= 1920 ? undefined : { resizeWidth: w, resizeHeight: hh, resizeQuality: q };
-    try { return await createImageBitmap(src, o); }  // decodifica fuera del hilo principal
-    catch (e) { if (e && e.name === 'AbortError') throw e; return createImageBitmap(src); }
+    const im = new Image(); im.src = url; await im.decode(); return im;   // respaldo file:// (sin fetch)
   }
   const inRange = (i) => i >= 1 && i <= N;
-  /** Fotogramas a decodificar, en orden: el actual, los siguientes sobre la trayectoria (espaciados por la velocidad) y unos pocos atrás. */
-  /** Paso entre fotogramas a preparar: el avance por cuadro, o más si la red/decodificación no da abasto (fotogramas por segundo que pide
-      la cámara ÷ fotogramas por segundo que se pueden traer o decodificar). Así nunca se encola trabajo que va a llegar tarde. */
-  const strideBy = (rate) => Math.max(1, Math.round(vf / STEP), Math.ceil(vf * 60 / STEP / rate)) * STEP;
-  const strideOf = () => Math.max(1, Math.round(vf / STEP)) * STEP;                      // decodificar: el avance por cuadro
-  const netStride = () => Math.min(8 * STEP, strideBy(MAXNET * 1000 / netMs));            // red: según lo que da abasto, con tope
-  function want(c) {
-    const s = strideOf(), L = [c];
-    for (let k = 1; k <= DEC_A; k++) { const i = c + dir * k * s; if (inRange(i)) L.push(i); }
-    for (let k = 1; k <= DEC_B; k++) { const i = c - dir * k * STEP; if (inRange(i)) L.push(i); }
+  const settled = () => slowSince !== null && performance.now() - slowSince >= SETTLE;   // null: en movimiento
+  /** Fotogramas que se van a dibujar en los próximos cuadros: se simula la inercia (misma fórmula que tick, a 60 Hz) desde yC hasta yT. */
+  function predict() {
+    const L = [], k = 1 - Math.exp(-(1 / 60) / TAU); let y = yC, prev = -1;
+    for (let n = 0; n < 48; n++) {
+      const f = snap(Math.floor(frameOfY(y))); if (f !== prev) { L.push(f); prev = f; }
+      if (Math.abs(yT - y) < 0.4) break; y += (yT - y) * k;
+    }
+    const fT = snap(Math.floor(frameOfY(yT))); if (fT !== prev) L.push(fT);
     return L;
   }
-  async function fetchBlob(i, prio) {
-    const ac = new AbortController(), t0 = performance.now(); net.set(i, ac);
+  function* around(c, A, B, s = STEP) {             // por cercanía: 2 adelante por cada 1 atrás, de a s fotogramas
+    for (let d = 0; d <= Math.max(A, B * 2); d++) {
+      if (d <= A) { const a = c + dir * d * s; if (inRange(a)) yield a; }
+      if (d && d % 2 === 0 && d / 2 <= B) { const b = c - dir * (d / 2) * s; if (inRange(b)) yield b; }
+    }
+  }
+  const bg = new Set();                             // pedidos livianos de fondo (prioridad baja): los primeros en cederle lugar a la trayectoria
+  function victim(c) { let k = null, d = -1; for (const x of bg) { if (!net.has(x)) { bg.delete(x); continue; } const e = Math.abs(+x.slice(1) - c); if (e > d) { d = e; k = x; } } return k; }
+  async function fetchBlob(i, kind, prio) {
+    const key = kind + i, ac = new AbortController(), t0 = performance.now(); net.set(key, ac); if (kind === 'l' && prio === 'low') bg.add(key);
     try {
-      const b = await source(i, ac.signal, prio);
+      const b = await source(i, kind, ac.signal, prio);
       if (dead) return;
-      blobs.set(i, b); blobBytes += b.size || 53e3; const ms = performance.now() - t0; rec(stats.net, ms); netMs += (ms - netMs) * 0.1;
-      if (blobBytes > BLOB_CAP) evictBlobs();
+      if (kind === 'l') { loBlob.set(i, b); loBytes += b.size || 20e3; } else { fullBlob.set(i, b); trim(fullBlob, FULL_BLOB_CAP, false); }
+      rec(stats.net, performance.now() - t0);
     } catch (e) { if (!(e && e.name === 'AbortError')) { failed++; if (failed === 8 && !stats.loaded) live.textContent = T.loadFail; } }
-    finally { if (net.get(i) === ac) net.delete(i); pump(); }
+    finally { if (net.get(key) === ac) net.delete(key); bg.delete(key); pump(); }
   }
   async function decode(i, kind) {
-    const key = kind + i, gen = stats.gen, src = blobs.get(i), t0 = performance.now(); dec.add(key); decN++;
+    const key = kind + i, src = (kind === 'l' ? loBlob : fullBlob).get(i), t0 = performance.now(); dec.add(key); decN++;
     try {
-      const b = kind === 'f' ? await bitmapOf(src, BW, BH, 'low') : await bitmapOf(src, KW, Math.round(KW * 9 / 16), 'low');
-      if (dead || gen !== stats.gen) { b.close(); return; }
-      (kind === 'f' ? bm : kf).set(i, { b }); stats.loaded++;
-      if (kind === 'f') { const ms = performance.now() - t0; rec(stats.dec, ms); decMs += (ms - decMs) * 0.1; evict(); }
-      dirty = true; kick();                         // el dibujo elige el mejor disponible: que lo reconsidere
+      // sin redimensionar (medido: el redimensionado bloquea el hilo principal); colorSpaceConversion 'none' da píxeles idénticos (medido);
+      // premultiplyAlpha 'none' NO: cambia hasta 2 niveles los bordes de los fotogramas con transparencia
+      const b = await createImageBitmap(src, { colorSpaceConversion: 'none' });
+      if (dead) { b.close(); return; }
+      (kind === 'l' ? lo : full).set(i, b); stats.loaded++;
+      rec(stats.dec, performance.now() - t0);
+      if (kind === 'l') trim(lo, LO_CAP, true); else trim(full, FULL_CAP, true);
+      const a = snap(Math.floor(curF)); if (Math.abs(i - a) <= 2 * STEP || kind === 'f') { dirty = true; kick(); }
     } catch (e) { if (!(e && e.name === 'AbortError')) failed++; }
     finally { dec.delete(key); decN--; pump(); }
   }
-  function evict() {                                // bitmaps: tope por memoria, se va lo más lejano (atrás pesa el triple)
-    if (bm.size <= CAP) return;
-    const c = curF, w = (i) => (i - c) * dir < 0 ? 3 * Math.abs(i - c) : Math.abs(i - c);
-    [...bm.keys()].sort((a, b) => w(b) - w(a)).slice(0, bm.size - CAP).forEach((i) => { bm.get(i).b.close(); bm.delete(i); });
-  }
-  function evictBlobs() {                           // blobs: tope por bytes; se baja al 85 % para no reordenar en cada llegada
-    const c = curF, w = (i) => (i - c) * dir < 0 ? 4 * Math.abs(i - c) : Math.abs(i - c);
-    for (const i of [...blobs.keys()].sort((a, b) => w(b) - w(a))) {
-      if (blobBytes <= BLOB_CAP * 0.85) break;
-      blobBytes -= blobs.get(i).size || 53e3; blobs.delete(i);
-    }
-  }
-  /** Orden de pedidos a la red: lo que se va a decodificar; la ventana adelante espaciada (cobertura rápida: la red no alcanza a traer cada
-      fotograma si la cámara va rápido); la ventana densa (4 adelante por cada 1 atrás) y las claves de respaldo. */
-  function* netOrder(c, Wl) {
-    for (const i of Wl) yield i;
-    const s2 = Math.max(netStride(), 3 * STEP);
-    for (let d = s2; d <= AHB * STEP; d += s2) { const a = c + dir * d; if (inRange(a)) yield a; }
-    for (let d = 1; d <= AHB; d++) {
-      const a = c + dir * d * STEP; if (inRange(a)) yield a;
-      if (d % 4 === 0 && d / 4 <= BHB) { const b = c - dir * (d / 4) * STEP; if (inRange(b)) yield b; }
-    }
-    yield* [...KEYS].sort((a, b) => Math.abs(a - c) - Math.abs(b - c));
+  function trim(m, cap, close) {                    // desalojo por distancia al fotograma actual (atrás pesa el doble)
+    if (m.size <= cap) return;
+    const c = curF, w = (i) => (i - c) * dir < 0 ? 2 * Math.abs(i - c) : Math.abs(i - c);
+    for (const i of [...m.keys()].sort((a, b) => w(b) - w(a)).slice(0, m.size - cap)) { if (close) m.get(i).close(); m.delete(i); }
   }
   function pump() {
     if (dead) return;
-    const c = snap(Math.round(curF)), Wl = want(c);
-    for (const i of Wl) { if (decN >= MAXDEC) break; if (!bm.has(i) && !dec.has('f' + i) && blobs.has(i)) decode(i, 'f'); }
-    if (decN < MAXDEC) {                            // respaldo de baja resolución: la clave más cercana con blob y sin decodificar
-      let best = 0, bd = 1e9;
-      for (const k of KEYS) { if (kf.has(k) || dec.has('k' + k) || !blobs.has(k)) continue; const d = Math.abs(k - c); if (d < bd) { bd = d; best = k; } }
-      if (best) decode(best, 'k');
+    const a = snap(Math.floor(curF)), c = a, P = predict();
+    // 1) completa: solo con la cámara detenida, el fotograma exacto (con un cupo de decodificación propio)
+    if (FULL && settled()) {
+      if (!full.has(a)) {
+        if (fullBlob.has(a)) { if (!dec.has('f' + a) && decN <= MAXDEC) decode(a, 'f'); }
+        else if (!net.has('f' + a)) fetchBlob(a, 'f', 'high');
+      }
+      for (const i of [a + dir * STEP, a - dir * STEP]) if (inRange(i) && !fullBlob.has(i) && !net.has('f' + i) && net.size < MAXNET) fetchBlob(i, 'f', 'low');
     }
-    if (net.size >= MAXNET) return;
+    // 2) liviana: decodificar primero la trayectoria prevista; después la anticipada (el mismo patrón un paso más allá, y la velocidad
+    //    actual extrapolada desde el destino); la ventana por cercanía solo con la cámara lenta (rápido, no da abasto y quita cupo)
+    const D = P[P.length - 1] - P[0], fT = P[P.length - 1], v = Math.max(1, vf), Q = [...P];
+    for (let k = 1; k <= 12; k++) { const i = c + dir * k * QS; if (inRange(i)) Q.push(i); }   // grilla densa por delante: el próximo paso de rueda arranca acá
+    if (D) for (const f of P) { const i = f + D; if (inRange(i)) Q.push(i); }
+    for (let k = 1; k <= 8; k++) { const i = snap(fT + dir * Math.round(k * v)); if (inRange(i)) Q.push(i); }
     let n = 0;
-    for (const i of netOrder(c, Wl)) {
-      if (net.size >= MAXNET) break;
-      if (!blobs.has(i) && !net.has(i)) fetchBlob(i, n < 3 ? 'high' : 'low');
-      if (++n > 2 * AHB + BHB + 200) break;
+    for (const i of Q) { if (decN >= MAXDEC) break; if (!lo.has(i) && !dec.has('l' + i) && loBlob.has(i)) decode(i, 'l'); }
+    if (decN < MAXDEC && vf < 1) for (const i of around(c, LO_A, LO_B, QS)) {
+      if (decN >= MAXDEC || ++n > 400) break;
+      if (!lo.has(i) && !dec.has('l' + i) && loBlob.has(i)) decode(i, 'l');
     }
+    // 3) red: blobs livianos, la trayectoria primero y después todo por cercanía (precarga total)
+    if (net.size >= MAXNET || loBlob.size >= loNeed) return;
+    for (const i of Q) {                            // la trayectoria desplaza a la precarga de fondo: se cancela el pedido de fondo más lejano
+      if (loBlob.has(i) || net.has('l' + i)) continue;
+      if (net.size >= MAXNET) { const v = victim(c); if (!v) return; bg.delete(v); const ac = net.get(v); if (ac) { ac.abort(); net.delete(v); } else continue; }
+      fetchBlob(i, 'l', 'high');
+    }
+    for (const i of around(c, NET_A, NET_B)) { if (net.size >= MAXNET) return; if (!loBlob.has(i) && !net.has('l' + i)) fetchBlob(i, 'l', 'low'); }
   }
-  function abortStale() {                           // lo que quedó fuera de la ventana (salvo claves de respaldo) se cancela
-    const c = curF, ahead = (AHB + 20) * STEP, behind = (BHB + 20) * STEP;
-    for (const [i, ac] of net) { const d = (i - c) * dir; if (!KEYSET.has(i) && (d > ahead || d < -behind)) { ac.abort(); net.delete(i); } }
+  function abortStale() {                           // completos que ya no son el objetivo; livianos lejanos (se vuelven a pedir en orden)
+    const a = snap(Math.floor(curF)), far = (saver ? 150 : 220) * STEP;
+    for (const [k, ac] of net) {
+      const i = +k.slice(1), d = Math.abs(i - a);
+      if ((k[0] === 'f' && (d > 2 * STEP || !settled())) || (k[0] === 'l' && d > far)) { ac.abort(); net.delete(k); bg.delete(k); }
+    }
   }
 
   // ---------- Dibujo ----------
-  /** Mejor imagen disponible para el fotograma i: el exacto; si no, el decodificado más cercano; la clave de baja resolución solo si está
-      bastante más cerca. Nunca se espera ni se deja vacío. Devuelve [bitmap, fotograma]. */
-  function bestFor(i) {
-    const e = bm.get(i); if (e) return [e.b, i];
+  /** Imagen para el fotograma i: la liviana exacta; si todavía no está, la completa exacta; si no, la liviana más cercana (cuenta como «stall»). */
+  function bestFor(i, cell = STEP) {
+    const L = lo.get(i); if (L) return [L, i];
+    for (let j = i - STEP; j > i - cell && j >= 1; j -= STEP) { const v = lo.get(j); if (v) return [v, j]; }   // dentro de la celda de la grilla rápida
+    const F = full.get(i); if (F) return [F, i];
     let best = null, bd = 1e9, bk = 0;
-    for (const [k, v] of bm) { const d = Math.abs(k - i); if (d < bd) { bd = d; best = v.b; bk = k; } }
-    for (const [k, v] of kf) { const d = Math.abs(k - i) + 12 * STEP; if (d < bd) { bd = d; best = v.b; bk = k; } }
+    for (const [k, v] of lo) { const d = Math.abs(k - i); if (d < bd) { bd = d; best = v; bk = k; } }
+    if (!best) for (const [k, v] of full) { const d = Math.abs(k - i); if (d < bd) { bd = d; best = v; bk = k; } }
     return best ? [best, bk] : null;
   }
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -295,25 +299,33 @@ export function mountTour(host, ctx, stops, opts = {}) {
   function draw() {
     dirty = false;
     const t0 = performance.now();
-    const a = snap(Math.floor(curF)), t = Math.min(1, (curF - a) / STEP), nx = a + STEP, e = easeIO(hp);
+    const a = 1 + Math.floor((Math.max(1, Math.min(N, Math.floor(curF))) - 1) / STEP) * STEP, e = easeIO(hp);   // objetivo real (sin grilla)
     g.fillStyle = paper; g.fillRect(0, 0, W, H);                          // el cielo transparente del fotograma 1 se funde con el papel
-    const P = bestFor(a);
+    const P = bestFor(a, QS);                       // rápido: el último fotograma de la celda de G (1 de cada G), nunca uno viejo
     if (!P || !tourRect) return;
-    const A = P[0];
     // La escena pasa de «contenida» bajo el título (portada) a «cubrir» el viewport (o la lámina, en retrato) con el primer scroll
     const r = sceneRect(e);
     g.save();
     if (band && e > 0) { g.beginPath(); g.rect(0, lerp(0, band[1], e), W, lerp(H, band[3], e)); g.clip(); }
-    g.drawImage(A, r.x, r.y, r.w, r.h);
-    // fundido entre vecinos solo cuando la cámara va lenta (un fotograma dura varios cuadros, p. ej. dentro de una parada); rápido: un solo drawImage
-    if (t > 0.08 && t < 0.92 && vf < 0.5 * STEP && P[1] === a && nx <= N && bm.has(nx)) { g.globalAlpha = t; g.drawImage(bm.get(nx).b, r.x, r.y, r.w, r.h); g.globalAlpha = 1; }
+    g.drawImage(P[0], r.x, r.y, r.w, r.h);
+    // completa encima de la liviana (mismo fotograma), con fundido de FADE ms; nunca durante el movimiento
+    const F = FULL && P[1] === a && settled() ? full.get(a) : null;
+    let fa = 0;
+    if (F && F !== P[0]) {
+      if (fadeF !== a) { fadeF = a; fadeT0 = t0; }
+      fa = Math.min(1, (t0 - fadeT0) / FADE);
+      if (fa > 0) { g.globalAlpha = fa; g.drawImage(F, r.x, r.y, r.w, r.h); g.globalAlpha = 1; }
+      if (fa < 1) dirty = true;                     // seguir el bucle hasta terminar el fundido
+    } else if (F) fa = 1;
+    if (fa > 0 && settleT) { rec(stats.settle, t0 - settleT); settleT = 0; }   // latencia: velocidad baja → aparece la 1920
     if (e < 1) { // en la portada el piso del diorama (el fotograma lo corta) se funde con el papel
       const y0 = r.y + r.h * 0.78, gr = g.createLinearGradient(0, y0, 0, r.y + r.h);
       gr.addColorStop(0, paperA0); gr.addColorStop(1, paper);
       g.globalAlpha = 1 - e; g.fillStyle = gr; g.fillRect(r.x - 2, y0, r.w + 4, r.y + r.h - y0 + 2); g.globalAlpha = 1;
     }
     g.restore();
-    stats.drawn++; if (P[1] !== a) { stats.miss++; stats.lag += Math.abs(P[1] - a); }   // «stall»: se dibujó otro fotograma que el objetivo
+    stats.drawn++; stats.lag += Math.abs(P[1] - a); if (P[1] > a || a - P[1] >= QS) { stats.miss++; const w = stats.why; const k = dec.has('l' + a) ? 'dec' : !loBlob.has(a) ? 'blob' : 'cola'; w[k] = (w[k] || 0) + 1; }   // «stall»: se dibujó otro fotograma que el objetivo
+    if (fa > 0) stats.full++; else stats.lo++;
     rec(stats.draws, performance.now() - t0);
   }
 
@@ -428,20 +440,28 @@ export function mountTour(host, ctx, stops, opts = {}) {
   const TAU = 0.085; // s: constante de tiempo del amortiguado (≈ 250 ms al 95 %)
   function tick(now) {
     raf = 0;
-    if (last) rec(stats.dts, now - last); else vf = 0;   // intervalo real entre cuadros (sin contar el primero tras una pausa)
+    if (last) rec(stats.dts, now - last); else { vf = 0; clearTimeout(idleT); }   // intervalo real entre cuadros (sin contar el primero tras una pausa)
     const dt = Math.min(0.064, last ? (now - last) / 1000 : 0.016); last = now;
     yT = Math.max(0, Math.min(total, scrollY - tourTop));
     if (Math.abs(yT - yC) > innerHeight * 3) { yC = yT; stats.jumps++; canvas.classList.add('is-jump'); requestAnimationFrame(() => canvas.classList.remove('is-jump')); } // salto largo: fundido, no barrido
     else { yC += (yT - yC) * (1 - Math.exp(-dt / TAU)); if (Math.abs(yT - yC) < 0.4) yC = yT; }
     const nf = frameOfY(yC);
     vf += (Math.abs(nf - curF) - vf) * (1 - Math.exp(-dt / 0.12));   // velocidad en fotogramas por cuadro (≈ 120 ms de memoria)
+    let ng = G; if (vf >= 2.5) ng = 3; else if (vf >= 1) ng = Math.max(ng, 2);
+    if (ng === 3 && vf < 1.8) ng = 2; if (ng >= 2 && vf < 0.7) ng = 1;
+    if (ng !== G) { G = ng; QS = STEP * G; dirty = true; }
+    if (vf >= SLOW) { slowSince = null; settleT = 0; } else if (slowSince === null) slowSince = settleT = now;
     if (nf !== curF) { dir = nf > curF ? 1 : -1; curF = nf; dirty = true; }
     const nhp = Math.max(0, Math.min(1, yC / HPX)); if (nhp !== hp) { hp = nhp; dirty = true; }
     if (Math.round(curF) !== lastF) { lastF = Math.round(curF); abortStale(); pump(); }
     if (dirty) draw();
     hud();
     hsUpdate();
-    if (yC !== yT || dirty) raf = requestAnimationFrame(tick); else last = 0;
+    if (yC !== yT || dirty) raf = requestAnimationFrame(tick);
+    else {                                          // quieto: velocidad 0; la completa se pide al cumplirse SETTLE ms
+      last = 0; vf = 0; if (G !== 1) { G = 1; QS = STEP; dirty = true; pump(); kick(); }   // quieto: de vuelta a la grilla de 1 if (slowSince === null) slowSince = settleT = now;
+      clearTimeout(idleT); if (FULL && !full.has(snap(Math.floor(curF)))) idleT = setTimeout(pump, Math.max(0, SETTLE - (performance.now() - slowSince)) + 5);
+    }
   }
   function kick() { if (!raf && !dead) raf = requestAnimationFrame(tick); }
   function goStop(k) { scrollTo({ top: tourTop + yOfFrame(stops[k].mid) + 1, behavior: 'instant' }); kick(); }
@@ -449,7 +469,8 @@ export function mountTour(host, ctx, stops, opts = {}) {
   // ---------- Eventos ----------
   const off = [];
   const bind = (t, ev, fn, o) => { t.addEventListener(ev, fn, o); off.push(() => t.removeEventListener(ev, fn, o)); };
-  bind(window, 'scroll', kick, { passive: true });
+  // al llegar el scroll se recalcula el destino y se encola la decodificación ya, sin esperar al próximo cuadro
+  bind(window, 'scroll', () => { yT = Math.max(0, Math.min(total, scrollY - tourTop)); pump(); kick(); }, { passive: true });
   let rz = 0; const relayout = () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); };
   bind(window, 'resize', relayout);
   // Cambio de DPR sin cambio de tamaño (mover la ventana a otro monitor, zoom): no siempre dispara resize
@@ -469,14 +490,14 @@ export function mountTour(host, ctx, stops, opts = {}) {
   kick();
   if (opts.stop != null && stops[opts.stop]) setTimeout(() => goStop(opts.stop), 60);
   else if (savedY) requestAnimationFrame(() => { scrollTo(0, savedY); kick(); });  // Depuración y QA: tiempos de dibujo y de cuadro, fotogramas decodificados, cobertura del viewport.
-  window.__mb = { stats, lite, goStop, frame: () => curF, total: () => total, bm: () => bm.size, kf: () => kf.size, cap: () => CAP, size: () => [W, H],
-    inflight: () => net.size, decoding: () => decN, blobs: () => [blobs.size, blobBytes], speed: () => vf, css: () => [CW, CH],
-    step: () => { cancelAnimationFrame(raf); raf = 0; tick(performance.now()); }, draw: () => { dirty = true; draw(); }, setFrame: (f) => { curF = f; dirty = true; }, paper: () => paper, ctx2d: g, bitmaps: bm, layout, yOf: yOfFrame, top: () => tourTop, settle: () => { yT = yC = Math.max(0, Math.min(total, scrollY - tourTop)); curF = frameOfY(yC); hp = Math.min(1, yC / HPX); dirty = true; tick(performance.now()); }, hs: () => HS, cardBox: () => cardBox, place: () => placeCache, rect: () => ({ tourRect, DP, CW, CH, band, headH }) };
+  window.__mb = { stats, lite, goStop, frame: () => curF, total: () => total, bm: () => lo.size, kf: () => full.size, cap: () => LO_CAP, size: () => [W, H],
+    inflight: () => net.size, decoding: () => decN, blobs: () => [loBlob.size, loBytes, loNeed, fullBlob.size], speed: () => vf, css: () => [CW, CH],
+    step: () => { cancelAnimationFrame(raf); raf = 0; tick(performance.now()); }, draw: () => { dirty = true; draw(); }, setFrame: (f) => { curF = f; dirty = true; }, paper: () => paper, ctx2d: g, lo, full, layout, yOf: yOfFrame, top: () => tourTop, settle: () => { yT = yC = Math.max(0, Math.min(total, scrollY - tourTop)); curF = frameOfY(yC); hp = Math.min(1, yC / HPX); dirty = true; tick(performance.now()); }, hs: () => HS, cardBox: () => cardBox, place: () => placeCache, rect: () => ({ tourRect, DP, CW, CH, band, headH }) };
   let perfOff = () => {};
-  if (PERF) import('../lib/perf-overlay.js?v=6').then((m) => { if (!dead) perfOff = m.mountPerf(window.__mb, ui.perf); }).catch(() => {});
+  if (PERF) import('../lib/perf-overlay.js?v=7').then((m) => { if (!dead) perfOff = m.mountPerf(window.__mb, ui.perf); }).catch(() => {});
   return () => {
     savedY = scrollY; dead = true; cancelAnimationFrame(raf); clearTimeout(liveT); off.forEach((f) => f());
-    for (const ac of net.values()) ac.abort(); net.clear(); blobs.clear(); perfOff();
-    for (const v of bm.values()) v.b.close(); for (const v of kf.values()) v.b.close(); bm.clear(); kf.clear(); delete window.__mb;
+    clearTimeout(idleT); for (const ac of net.values()) ac.abort(); net.clear(); loBlob.clear(); fullBlob.clear(); perfOff();
+    for (const v of lo.values()) v.close(); for (const v of full.values()) v.close(); lo.clear(); full.clear(); delete window.__mb;
   };
 }

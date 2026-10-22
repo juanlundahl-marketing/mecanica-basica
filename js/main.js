@@ -1,21 +1,21 @@
 // Mecánica Básica: arranque, idioma, tema, router por hash y búsqueda global.
-import { h } from './lib/dom.js?v=6';
-import { buildModel, search } from './lib/model.js?v=6';
-import { plural } from './lib/text.js?v=6';
-import { ico } from './lib/icons.js?v=6';
-import { buildStops } from './lib/recorrido-paradas.js?v=6';
-import { closeDetail } from './lib/hoja-detalle.js?v=6';
-import { EXTRA } from './ui-strings.js?v=6';
-import { resultGroups, totalOf } from './views/search.js?v=6';
-import * as home from './views/home.js?v=6';
-import * as moduleView from './views/module.js?v=6';
-import * as lesson from './views/lesson.js?v=6';
-import * as diagnostic from './views/diagnostic.js?v=6';
-import * as glossary from './views/glossary.js?v=6';
-import * as searchView from './views/search.js?v=6';
-import * as credits from './views/creditos.js?v=6';
-import * as notfound from './views/notfound.js?v=6';
-import * as recorrido from './views/recorrido-continuo.js?v=6';
+import { h } from './lib/dom.js?v=7';
+import { buildModel, search } from './lib/model.js?v=7';
+import { plural } from './lib/text.js?v=7';
+import { ico } from './lib/icons.js?v=7';
+import { buildStops } from './lib/recorrido-paradas.js?v=7';
+import { closeDetail } from './lib/hoja-detalle.js?v=7';
+import { EXTRA } from './ui-strings.js?v=7';
+import { resultGroups, totalOf } from './views/search.js?v=7';
+import * as home from './views/home.js?v=7';
+import * as moduleView from './views/module.js?v=7';
+import * as lesson from './views/lesson.js?v=7';
+import * as diagnostic from './views/diagnostic.js?v=7';
+import * as glossary from './views/glossary.js?v=7';
+import * as searchView from './views/search.js?v=7';
+import * as credits from './views/creditos.js?v=7';
+import * as notfound from './views/notfound.js?v=7';
+import * as recorrido from './views/recorrido-continuo.js?v=7';
 
 const ROUTES = [
   [/^\/?$/, home, 'home'],
@@ -42,7 +42,7 @@ async function boot() {
   const main = document.getElementById('main');
   let content;
   try {
-    const r = await fetch('data/content.json?v=6');
+    const r = await fetch('data/content.json?v=7');
     if (!r.ok) throw new Error(r.status);
     content = await r.json();
   } catch (e) {

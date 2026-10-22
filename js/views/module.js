@@ -1,6 +1,6 @@
-import { h, svg } from '../lib/dom.js?v=6';
-import { MODULE_ICONS } from '../lib/icons.js?v=6';
-import { gauge } from '../lib/components.js?v=6';
+import { h, svg } from '../lib/dom.js?v=7';
+import { MODULE_ICONS } from '../lib/icons.js?v=7';
+import { gauge } from '../lib/components.js?v=7';
 
 export function render(el, ctx) {
   const { ui, model, params } = ctx;

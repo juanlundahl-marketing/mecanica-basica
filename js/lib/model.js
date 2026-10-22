@@ -1,5 +1,5 @@
 // Modelo derivado del bloque de idioma: índices por id, módulos, uso del glosario y búsqueda.
-import { norm, hasWordStart } from './text.js?v=5';
+import { norm, hasWordStart } from './text.js?v=6';
 
 const LEVEL_NUM = { basico: 1, intermedio: 2, avanzado: 3 };
 export const levelNum = (n) => LEVEL_NUM[n] || 1;

@@ -19,13 +19,13 @@
 .tr-hero .code { margin: 0; color: var(--ink-2); }
 .tr-hero .code b { color: var(--ink); font-weight: 500; }
 .tr-cue { position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; color: var(--ink-2);
-  font: 500 var(--fs-label)/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  font: 500 var(--fs-label)/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; background: var(--glass-strong);
   box-shadow: var(--glass-edge); padding: 8px 14px; border-radius: var(--r-lg); white-space: nowrap; }
 .tr-cue i { width: 1px; height: 22px; background: linear-gradient(var(--signal-fill) 0 40%, var(--hairline-strong) 40%); background-size: 100% 200%; animation: tr-cue 1.8s var(--ease-in-out) infinite; }
 @keyframes tr-cue { from { background-position: 0 100%; } to { background-position: 0 -100%; } }
 
 /* Tarjeta de parada */
-.tr-card { position: absolute; left: var(--gutter); bottom: 96px; width: min(452px, calc(100% - 2 * var(--gutter))); background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+.tr-card { position: absolute; left: var(--gutter); bottom: 96px; width: min(452px, calc(100% - 2 * var(--gutter))); background: var(--glass-strong);
   box-shadow: var(--glass-edge), var(--shadow-2); border-radius: var(--r-lg); padding: 18px 20px; opacity: 0; transform: translate3d(var(--dx, 0px), calc(var(--dy, 0px) + 12px), 0); visibility: hidden;
   transition: opacity var(--t-med) var(--ease-out), transform var(--t-med) var(--ease-out), visibility 0s linear var(--t-med); }
 .tr-card.is-on { opacity: 1; transform: translate3d(var(--dx, 0px), var(--dy, 0px), 0); visibility: visible; transition-delay: 0s; }
@@ -40,7 +40,7 @@
 
 /* Riel de progreso: 3 estaciones proporcionales al scroll, línea, punto de posición y 18 marcas */
 .tr-rail { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 20px; height: 56px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
-  background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-edge); border-radius: var(--r-lg); padding: 0 16px; }
+  background: var(--glass-strong); box-shadow: var(--glass-edge); border-radius: var(--r-lg); padding: 0 16px; }
 .tr-track { position: relative; height: 100%; }
 .tr-segs { position: absolute; inset: 0; display: flex; }
 .tr-segs .seg { position: relative; border-left: 1px solid var(--hairline-strong); padding: 7px 0 0 8px; min-width: 0; }
@@ -144,7 +144,7 @@ dialog.sheet::backdrop { background: rgba(15, 20, 25, .22); }
 .hs:focus-visible .hs-disc { box-shadow: 0 0 0 2px #fff, 0 0 0 5px #13202B, 0 0 0 7px #fff, 0 5px 14px rgba(0, 0, 0, .35); }
 .hs--ill:focus-visible .hs-disc { box-shadow: inset 0 0 0 3px #E85A1C, 0 0 0 2px #fff, 0 0 0 5px #13202B, 0 0 0 7px #fff, 0 5px 14px rgba(0, 0, 0, .35); }
 .hs-tag { position: absolute; left: 50%; bottom: calc(50% + 24px); display: flex; flex-direction: column; gap: 2px; width: max-content; max-width: min(240px, 60vw); padding: 7px 11px 8px;
-  border-radius: var(--r-md); background: var(--glass-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); color: var(--ink); box-shadow: var(--glass-edge), var(--shadow-1);
+  border-radius: var(--r-md); background: var(--glass-strong); color: var(--ink); box-shadow: var(--glass-edge), var(--shadow-1);
   font: 600 .9375rem/1.2 var(--font-ui); letter-spacing: -.005em; text-align: left; pointer-events: none; opacity: 0; transform: translate(-50%, 4px); transition: opacity var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
 .hs-tag small { font: 500 .6875rem/1.1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .hs--ill .hs-tag small { color: var(--signal); }
@@ -157,3 +157,16 @@ dialog.sheet::backdrop { background: rgba(15, 20, 25, .22); }
 @media (forced-colors: active) { .hs:focus-visible .hs-disc { outline: 3px solid CanvasText; outline-offset: 6px; } .hs-disc { forced-color-adjust: none; } }
 @media (prefers-reduced-motion: reduce) { .hs-disc, .hs-tag { transition: none; } .hs:hover .hs-disc, .hs:focus-visible .hs-disc { transform: none; } }
 .hs-layer.is-static .hs-disc, .hs-layer.is-static .hs-tag { transition: none; } .hs-layer.is-static .hs:hover .hs-disc, .hs-layer.is-static .hs:focus-visible .hs-disc { transform: none; }
+
+/* Sobre el canvas (portada) no hay backdrop-filter: el canvas cambia cada cuadro y el desenfoque se recalcularía en cada uno
+   (caro a 4K). Fondo casi opaco + borde y sombra; el desenfoque queda en la hoja de detalle y en las vistas estáticas. */
+body[data-route="home"] .nav-panel { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--surface); }
+
+/* Overlay de diagnóstico (?perf=1) */
+.perf { position: fixed; z-index: 90; left: 12px; top: 76px; max-width: min(640px, calc(100vw - 24px)); padding: 10px 12px; border-radius: var(--r-md);
+  background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--hairline-strong), var(--shadow-2); font: 500 12px/1.45 var(--font-mono); }
+.perf-t { margin: 0 0 6px; font-weight: 700; }
+.perf-pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+.perf-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.perf-acts .btn { min-height: 36px; }
+.perf-hint, .perf-msg { margin: 6px 0 0; color: var(--ink-2); }

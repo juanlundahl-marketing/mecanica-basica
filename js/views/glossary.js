@@ -1,6 +1,6 @@
-import { h } from '../lib/dom.js?v=5';
-import { ico } from '../lib/icons.js?v=5';
-import { norm, firstLetter, plural, hasWordStart } from '../lib/text.js?v=5';
+import { h } from '../lib/dom.js?v=6';
+import { ico } from '../lib/icons.js?v=6';
+import { norm, firstLetter, plural, hasWordStart } from '../lib/text.js?v=6';
 
 export function render(el, ctx) {
   const { ui, model, params } = ctx;

@@ -1,11 +1,11 @@
 // Puntos «+» sobre las piezas de la escena. Datos: data/hotspots.json (trayectorias x,y normalizadas sobre el fotograma 16:9 completo
 // y opacidad por fotograma). Si el JSON falla, loadHotspots() devuelve null y el sitio sigue solo con la lista de la hoja.
-import { h } from './dom.js?v=5';
+import { h } from './dom.js?v=6';
 
 let pending = null;
 export function loadHotspots() {
   if (!pending) pending = (location.protocol.startsWith('http')
-    ? fetch('data/hotspots.json?v=5').then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null))
+    ? fetch('data/hotspots.json?v=6').then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null))
     .then((d) => (d && Array.isArray(d.paradas) ? d : null));
   return pending;
 }

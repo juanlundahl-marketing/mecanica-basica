@@ -64,7 +64,7 @@ main:focus { outline: none; }
 .pill { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: var(--r-lg); }
 body[data-route="home"] .top { position: fixed; inset: 0 0 auto 0; background: none; border: 0; -webkit-backdrop-filter: none; backdrop-filter: none; pointer-events: none; padding-top: 12px; }
 body[data-route="home"] .top > *, body[data-route="home"] .top .head-right { pointer-events: auto; }
-body[data-route="home"] .pill { background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-edge); }
+body[data-route="home"] .pill { background: var(--glass-strong); /* sin backdrop-filter: sobre el canvas que cambia cada cuadro obligaría a re-desenfocar */ box-shadow: var(--glass-edge); }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 14px 0 8px; min-height: 44px; text-decoration: none; color: var(--ink); font: 700 1rem/1 var(--font-display); letter-spacing: -.01em; }
 .brand .ico { width: 26px; height: 26px; color: var(--line); }
 .head-right { position: relative; display: flex; justify-content: flex-end; }

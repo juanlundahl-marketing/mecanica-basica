@@ -147,6 +147,7 @@ export function render(el, ctx) {
       }
       const pct = (f - 1) / (N - 1);
       pbar.style.transform = `scaleX(${pct.toFixed(4)})`; progress.setAttribute('aria-valuenow', Math.round(pct * 100));
+      progress.setAttribute('aria-valuetext', `${Math.round(pct * 100)} %. ${(capT.textContent + (capA.hidden ? '' : capA.textContent)).trim()}`);
     }
     function tick() {
       raf = 0; target = frameFromScroll();

@@ -1,4 +1,4 @@
-import { h } from '../lib/dom.js';
+import { h } from '../lib/dom.js?v=5';
 
 export function render(el, ctx) {
   const { ui } = ctx;

@@ -1,19 +1,21 @@
 // Mecánica Básica: arranque, idioma, tema, router por hash y búsqueda global.
-import { h, svg } from './lib/dom.js';
-import { buildModel, search } from './lib/model.js';
-import { plural } from './lib/text.js';
-import { LOGO } from './lib/icons.js';
-import { EXTRA } from './ui-strings.js';
-import { resultGroups, totalOf } from './views/search.js';
-import * as home from './views/home.js';
-import * as moduleView from './views/module.js';
-import * as lesson from './views/lesson.js';
-import * as diagnostic from './views/diagnostic.js';
-import * as glossary from './views/glossary.js';
-import * as searchView from './views/search.js';
-import * as credits from './views/creditos.js';
-import * as notfound from './views/notfound.js';
-import * as recorrido from './views/recorrido-continuo.js';
+import { h } from './lib/dom.js?v=5';
+import { buildModel, search } from './lib/model.js?v=5';
+import { plural } from './lib/text.js?v=5';
+import { ico } from './lib/icons.js?v=5';
+import { buildStops } from './lib/recorrido-paradas.js?v=5';
+import { closeDetail } from './lib/hoja-detalle.js?v=5';
+import { EXTRA } from './ui-strings.js?v=5';
+import { resultGroups, totalOf } from './views/search.js?v=5';
+import * as home from './views/home.js?v=5';
+import * as moduleView from './views/module.js?v=5';
+import * as lesson from './views/lesson.js?v=5';
+import * as diagnostic from './views/diagnostic.js?v=5';
+import * as glossary from './views/glossary.js?v=5';
+import * as searchView from './views/search.js?v=5';
+import * as credits from './views/creditos.js?v=5';
+import * as notfound from './views/notfound.js?v=5';
+import * as recorrido from './views/recorrido-continuo.js?v=5';
 
 const ROUTES = [
   [/^\/?$/, home, 'home'],
@@ -40,7 +42,7 @@ async function boot() {
   const main = document.getElementById('main');
   let content;
   try {
-    const r = await fetch('data/content.json');
+    const r = await fetch('data/content.json?v=5');
     if (!r.ok) throw new Error(r.status);
     content = await r.json();
   } catch (e) {
@@ -77,6 +79,7 @@ async function boot() {
     cleanup = () => {};
     document.body.dataset.route = '';
     closePanel();
+    closeDetail();
     const path = decodeURI(location.hash.replace(/^#/, '').split('?')[0]) || '/';
     let view = notfound, params = [], key = '';
     for (const [re, mod, k] of ROUTES) {
@@ -84,6 +87,7 @@ async function boot() {
       if (m) { view = mod; params = m.slice(1); key = k; break; }
     }
     ctx.params = params;
+    document.body.dataset.route = key; // antes de montar: la cabecera cambia de posición y eso mueve el layout
     const result = view.render(main, ctx);
     cleanup = typeof result === 'function' ? result : () => {};
     markNav(key);
@@ -98,76 +102,97 @@ async function boot() {
   route();
 }
 
-/* ---------- Cabecera, búsqueda, pie ---------- */
+/* ---------- Cabecera (HUD), menú, paleta de búsqueda, pie ---------- */
 let closePanel = () => {};
 function markNav(key) {
-  document.querySelectorAll('.main-nav a').forEach((a) => {
+  document.querySelectorAll('.main-nav a, .nav-panel a').forEach((a) => {
     if (a.dataset.key === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
 }
 function buildChrome(ui, lang, meta, model) {
   const root = document.documentElement;
   const isDark = () => { const t = root.getAttribute('data-theme'); return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
-  const themeBtn = h('button', { class: 'btn', type: 'button', id: 'theme', 'aria-label': ui.theme.aria }, '');
-  const syncTheme = () => { themeBtn.textContent = isDark() ? ui.theme.toLight : ui.theme.toDark; themeBtn.setAttribute('aria-label', `${ui.theme.aria}: ${themeBtn.textContent}`); };
+  const liveRoute = document.getElementById('live-route');
+  const themeBtn = h('button', { class: 'nav-btn', type: 'button', id: 'theme' }, ico('theme'));
+  const syncTheme = () => { themeBtn.setAttribute('aria-label', `${ui.theme.aria}: ${isDark() ? ui.theme.toLight : ui.theme.toDark}`); };
   themeBtn.addEventListener('click', () => {
     const next = isDark() ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
     store.set('mb-theme', next);
     syncTheme();
+    liveRoute.textContent = next === 'dark' ? ui.theme.toDark : ui.theme.toLight;
+    window.dispatchEvent(new Event('mb-theme')); // el recorrido relee el color del papel
   });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncTheme);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { syncTheme(); window.dispatchEvent(new Event('mb-theme')); });
   syncTheme();
 
   const langSel = meta.langs.length > 1 ? h('select', { 'aria-label': ui.langLabel, onchange: (e) => { store.set('mb-lang', e.target.value); location.reload(); } },
     meta.langs.map((l) => h('option', { value: l, selected: l === lang }, l.toUpperCase()))) : null;
 
-  const nav = h('nav', { class: 'main-nav', 'aria-label': ui.navAria },
-    h('a', { href: '#/', 'data-key': 'home' }, ui.nav.home),
+  const links = (cls) => h('div', { class: cls },
     h('a', { href: `#/modulo/${meta.modulos[0]}`, 'data-key': 'lessons' }, ui.nav.lessons),
-    h('a', { href: '#/recorrido', 'data-key': 'tour' }, ui.nav.tour),
     h('a', { href: '#/diagnostico', 'data-key': 'diagnostic' }, ui.nav.diagnostic),
     h('a', { href: '#/glosario', 'data-key': 'glossary' }, ui.nav.glossary));
 
-  document.getElementById('site-head').replaceChildren(h('div', { class: 'wrap head-row' },
-    h('a', { class: 'logo', href: '#/', 'aria-label': ui.brandHome }, svg(LOGO), ui.siteTitle), nav,
-    h('div', { class: 'head-tools' }, langSel, themeBtn)));
+  // Menú desplegable (pantallas angostas): botón con aria-expanded + lista de secciones
+  const menuBtn = h('button', { class: 'nav-btn nav-menu-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'nav-panel', 'aria-label': ui.menu.aria }, ico('menu'));
+  const menuPanel = h('nav', { class: 'nav-panel', id: 'nav-panel', 'aria-label': ui.navAria, hidden: true }, links('nav-panel-links'));
+  const setMenu = (open, back) => {
+    menuPanel.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open));
+    if (!open && back) menuBtn.focus();
+  };
+  menuBtn.addEventListener('click', () => setMenu(menuPanel.hidden));
+  menuPanel.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menuPanel.hidden) { e.preventDefault(); setMenu(false, true); } });
+  document.addEventListener('click', (e) => { if (!menuPanel.hidden && !menuPanel.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false); });
+  addEventListener('hashchange', () => setMenu(false));
 
-  // Búsqueda
-  const input = h('input', { id: 'q', type: 'search', placeholder: ui.search.placeholder, autocomplete: 'off', enterkeyhint: 'search', 'aria-controls': 'q-panel' });
-  const panel = h('div', { class: 'search-panel', id: 'q-panel', hidden: true });
-  const live = document.getElementById('live-search');
-  const form = h('form', { class: 'search-form', role: 'search' },
-    h('label', { class: 'label', for: 'q' }, ui.search.label), input,
-    h('button', { class: 'btn btn-primary', type: 'submit' }, ui.search.submit), panel);
-  document.getElementById('search-bar').replaceChildren(h('div', { class: 'wrap' }, form));
-  closePanel = () => { panel.hidden = true; };
+  // Paleta de búsqueda (diálogo modal): Esc cierra, flechas recorren resultados, el recorrido sigue donde estaba
+  const F = ui.find;
+  const input = h('input', { id: 'q', type: 'search', placeholder: ui.search.placeholder, autocomplete: 'off', enterkeyhint: 'search' });
+  const res = h('div', { class: 'find-res', id: 'q-panel' });
+  const flive = h('p', { class: 'vh', role: 'status', 'aria-live': 'polite' });
+  const form = h('form', { role: 'search', class: 'find-form' },
+    h('label', { class: 'field', for: 'q' }, ico('search'), h('span', { class: 'vh' }, ui.search.label), input, h('span', { class: 'kbd', 'aria-hidden': 'true' }, F.hint)));
+  const dlg = h('dialog', { class: 'find', 'aria-label': F.dialogLabel }, form, res, flive);
+  document.body.append(dlg);
+  const lessonLinks = (list) => h('section', { class: 'results-group' }, h('h3', null, F.start),
+    h('ul', { class: 'results' }, list.map((s) => h('li', null, h('a', { href: `#/leccion/${s.id}` }, h('strong', null, s.l.titulo), h('small', null, s.l.resumen.length > 140 ? `${s.l.resumen.slice(0, 137)}…` : s.l.resumen))))));
   const update = () => {
     const q = input.value.trim();
-    if (q.length < 2) { panel.hidden = true; live.textContent = ''; return; }
-    const res = search(model, q);
-    const n = totalOf(res);
-    const msg = n ? plural(n, ui.search.count) : ui.search.noResults;
-    live.textContent = msg;
-    panel.replaceChildren(...[h('p', { class: 'panel-status', 'aria-hidden': 'true' }, msg),
-      ...resultGroups(res, ui, 5),
-      n ? h('p', { class: 'panel-status' }, h('a', { href: `#/buscar/${encodeURIComponent(q)}` }, ui.search.viewAll)) : null].filter(Boolean));
-    panel.hidden = false;
+    if (q.length < 2) {
+      res.replaceChildren(lessonLinks(buildStops({ ui, model }).slice(0, 5)), h('p', { class: 'panel-status' }, ui.search.typeMore));
+      flive.textContent = ''; return;
+    }
+    const r = search(model, q), n = totalOf(r), msg = n ? plural(n, ui.search.count) : ui.search.noResults;
+    flive.textContent = msg;
+    res.replaceChildren(h('p', { class: 'panel-status', 'aria-hidden': 'true' }, msg), ...resultGroups(r, ui, 6),
+      n ? h('p', { class: 'panel-status' }, h('a', { href: `#/buscar/${encodeURIComponent(q)}` }, ui.search.viewAll)) : null);
   };
+  const openFind = () => { if (dlg.open) return; setMenu(false); root.classList.add('is-locked'); dlg.showModal(); input.value = ''; update(); input.focus(); };
+  closePanel = () => { if (dlg.open) dlg.close(); };
+  const findBtn = h('button', { class: 'nav-btn', type: 'button', 'aria-haspopup': 'dialog', 'aria-label': F.openAria }, ico('search'), h('span', { class: 'only-wide' }, F.open), h('span', { class: 'kbd only-wide', 'aria-hidden': 'true' }, '/'));
+  findBtn.addEventListener('click', openFind);
   input.addEventListener('input', update);
-  input.addEventListener('focus', () => { if (input.value.trim().length >= 2) update(); });
-  form.addEventListener('submit', (e) => {
+  dlg.addEventListener('close', () => root.classList.remove('is-locked'));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('a')) dlg.close(); });
+  form.addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (q) { dlg.close(); location.hash = `#/buscar/${encodeURIComponent(q)}`; } });
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const items = [...res.querySelectorAll('a')]; if (!items.length) return;
     e.preventDefault();
-    const q = input.value.trim();
-    if (q) location.hash = `#/buscar/${encodeURIComponent(q)}`;
+    const i = items.indexOf(document.activeElement);
+    items[e.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1)].focus();
   });
-  form.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !panel.hidden) { input.focus(); closePanel(); } // foco primero: el handler de focus reabriría el panel
-    if (e.key === 'ArrowDown' && !panel.hidden && e.target === input) { e.preventDefault(); panel.querySelector('a')?.focus(); }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && !/input|textarea|select/i.test(document.activeElement.tagName) && !document.querySelector('dialog[open]')) { e.preventDefault(); openFind(); }
   });
-  document.addEventListener('click', (e) => { if (!form.contains(e.target)) closePanel(); });
-  form.addEventListener('focusout', (e) => { if (e.relatedTarget && !form.contains(e.relatedTarget)) closePanel(); });
-  panel.addEventListener('click', (e) => { if (e.target.closest('a')) { closePanel(); } });
+
+  document.getElementById('site-head').replaceChildren(
+    h('div', { class: 'pill' }, h('a', { class: 'brand', href: '#/', 'aria-label': ui.brandHome }, ico('mark'), h('span', null, ui.siteTitle))),
+    h('div', { class: 'head-right' },
+      h('div', { class: 'pill nav' }, h('nav', { class: 'main-nav', 'aria-label': ui.navAria }, links('main-nav-links')), menuBtn, findBtn, themeBtn, langSel),
+      menuPanel));
 
   // Pie
   document.getElementById('site-foot').replaceChildren(h('div', { class: 'wrap' },

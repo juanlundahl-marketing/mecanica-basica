@@ -1,82 +1,126 @@
-/* Tokens: Tipografía "Taller claro" (Manrope + JetBrains Mono) + Look "Vidrio de tablero".
-   Los nombres de tokens se mantienen; --surface/--head-bg son SÓLIDOS por defecto (respaldo);
-   el vidrio (--glass*) se activa solo en base.css con @supports + media (escritorio, sin
-   reduced-transparency ni ahorro de datos). Sin preferencia guardada manda prefers-color-scheme. */
+/* Mecánica Básica · tokens v2 «Taller a la luz» (rediseño 2026-10).
+   Paleta derivada de los fotogramas renderizados (muestreo por canvas): hormigón claro, zócalo azul marino,
+   ladrillo, salvia de la pista y el naranja de seguridad (crique, balizas, matafuego) como único acento.
+   Se mantienen los NOMBRES de tokens del sitio actual (paper, surface, ink, line, signal…) y se suman nuevos.
+   Contrastes medidos (WCAG 2.x) en ESPECIFICACION.md §3. */
+
 :root {
-  --paper: #E8EDF3; --surface: #FFFFFF; --surface-2: #E1E7EE;
-  --ink: #0B1620; --ink-2: #2A3947; --muted: #4A5866;
-  --grid: rgba(11, 22, 32, .10); --grid-strong: #7D8B99;
-  --line: #0A6684; --line-ink: #FFFFFF;
-  --signal: #8A5300; --signal-fill: #FFB547; --signal-ink: #1A1000;
+  color-scheme: light;
+
+  /* ---- Superficies (hormigón) ---- */
+  --paper: #F2EDE6;          /* fondo general; también el «cielo» del fotograma 1 (transparente) */
+  --surface: #FBF9F6;        /* tarjetas, hojas, campos */
+  --surface-2: #E8E1D7;      /* bandas, chips en reposo, filas expandidas */
+  --hairline: rgba(19, 32, 43, .12);
+  --hairline-strong: rgba(19, 32, 43, .24);
+
+  /* ---- Tinta ---- */
+  --ink: #13202B;            /* texto principal (navy grafito) 14.2:1 sobre paper */
+  --ink-2: #2E3D4A;          /* subtítulos 9.6:1 */
+  --muted: #55606A;          /* texto secundario 5.5:1 (4.95 sobre surface-2) */
+
+  /* ---- Marca y acento ---- */
+  --line: #1D3A57;           /* zócalo azul: marca, botón primario, enlaces fuertes (10:1) */
+  --line-ink: #FFFFFF;       /* texto sobre --line (11.7:1) */
+  --signal: #A63E0D;         /* naranja de seguridad como TEXTO / enlaces activos (≥4.5:1 sobre paper, surface y surface-2) */
+  --signal-fill: #E85A1C;    /* naranja como RELLENO no textual: marcador del riel, punto activo, subrayado (3.05:1 sobre paper) */
+  --signal-ink: #FFFFFF;     /* texto sobre --signal (botón de acento) */
   --alert: #B3261E; --alert-ink: #FFFFFF;
-  --ok: #1F7A4C;
-  --focus: #D9480F;
+  --ok: #2F6B3F;
+  --focus: #C2410C;          /* anillo de foco: 2px sólido + 2px de separación (≥3:1 contra paper y surface) */
 
-  --font-display: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* ---- Estaciones del recorrido (siempre acompañadas de texto: nunca solo color) ---- */
+  --st-taller: #9A4430;        /* ladrillo */
+  --st-concesionaria: #36617F; /* acero de la concesionaria */
+  --st-pista: #45694A;         /* salvia oscuro de la pista */
+
+  /* ---- Compatibilidad con nombres actuales ---- */
+  --grid: var(--hairline); --grid-strong: #857A6E;
+  --card-border: var(--hairline); --panel-border: var(--hairline);
+  --field-border: #7A6F63; --btn-border: var(--hairline-strong);
+  --btn-primary-bg: var(--line);
+  --btn-primary-shadow: none;
+  --head-bg: var(--paper); --head-glass: rgba(242, 237, 230, .78);
+  --bg-art: none; --bg-art-lite: none;
+
+  /* ---- Vidrio (HUD sobre la escena) ---- */
+  --glass: rgba(251, 249, 246, .90);
+  --glass-strong: rgba(251, 249, 246, .94);
+  --glass-blur: saturate(140%) blur(22px);
+  --glass-edge: inset 0 0 0 1px rgba(255, 255, 255, .55), 0 0 0 1px rgba(19, 32, 43, .10);
+
+  /* ---- Sombras (luz cenital de taller: corta y suave) ---- */
+  --shadow-1: 0 1px 0 rgba(19, 32, 43, .06), 0 10px 28px -14px rgba(19, 32, 43, .30);
+  --shadow-2: 0 2px 0 rgba(19, 32, 43, .05), 0 28px 60px -24px rgba(19, 32, 43, .45);
+
+  /* ---- Tipografía ---- */
+  --font-display: "Bricolage Grotesque", "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --h-weight: 800; --h-track: -.025em; --label-case: none; --label-track: .01em;
+  --h-weight: 650; --h-track: -.028em; --label-case: uppercase; --label-track: .08em;
+  --fs-hero: clamp(3.25rem, 2rem + 7.2vw, 9rem);
+  --fs-1: clamp(2.25rem, 1.6rem + 2.6vw, 3.75rem);
+  --fs-2: clamp(1.5rem, 1.25rem + 1vw, 2.125rem);
+  --fs-3: 1.25rem;
+  --fs-body: 1.125rem;   /* 18px serif para lectura */
+  --fs-ui: .9375rem;     /* 15px interfaz */
+  --fs-label: .75rem;    /* 12px mono en mayúsculas */
+  --lh-body: 1.62; --lh-tight: 1.02;
 
-  --measure: 104ch;
+  /* ---- Medidas ---- */
+  --measure: 104ch;      /* tope de lectura en escritorio (regla de Juan: 100-112ch) */
+  --measure-prose: 72ch; /* párrafos largos en serif dentro de la columna */
   --gutter: 16px;
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --space-5: 24px; --space-6: 40px; --space-7: 64px;
-  --radius: 14px; --r-sm: 10px; --r-md: 14px; --r-lg: 22px; --r-btn: 12px; --r-chip: 8px;
+  --space-5: 24px; --space-6: 40px; --space-7: 64px; --space-8: 104px;
 
-  /* Vidrio (valores; se aplican solo en el bloque @supports de base.css) */
-  --glass: rgba(255, 255, 255, .74); --glass-blur: saturate(170%) blur(16px);
-  --head-bg: #F2F5F9; --head-glass: rgba(232, 237, 243, .72);
-  --card-border: rgba(255, 255, 255, .7); --panel-border: rgba(11, 22, 32, .12);
-  --field-border: #66768A; --btn-border: rgba(11, 22, 32, .22);
-  --btn-primary-bg: linear-gradient(180deg, #0C7697, #0A6684);
-  --btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 8px 20px -8px rgba(10, 102, 132, .6);
-  --shadow-1: 0 1px 2px rgba(11, 22, 32, .06), 0 8px 24px -10px rgba(11, 22, 32, .18);
-  --shadow-2: 0 20px 40px -12px rgba(11, 22, 32, .28);
-  --bg-art: radial-gradient(42rem 32rem at 12% 8%, #CDE3F1, transparent 62%), radial-gradient(38rem 28rem at 88% 18%, #F7E3C3, transparent 62%), radial-gradient(52rem 40rem at 50% 105%, #D8DEF0, transparent 62%);
-  --bg-art-lite: radial-gradient(36rem 26rem at 20% 0%, #CDE3F1, transparent 62%);
-  color-scheme: light;
+  /* ---- Forma: cantos de chapa plegada, no burbujas ---- */
+  --radius: 6px; --r-sm: 4px; --r-md: 6px; --r-lg: 10px; --r-btn: 6px; --r-chip: 999px;
+
+  /* ---- Movimiento ---- */
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --t-fast: 140ms; --t-med: 260ms; --t-slow: 520ms;
 }
-@media (min-width: 768px) { :root { --gutter: 32px; } }
 
+/* Oscuro: el taller de noche. La escena sigue siendo la escena (los fotogramas no se oscurecen);
+   cambia el cromo alrededor y el «cielo» transparente del fotograma 1, que queda como un diorama iluminado. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #070B12; --surface: #121A26; --surface-2: #1B2634;
-    --ink: #EAF1F8; --ink-2: #C5D2DF; --muted: #A9B8C8;
-    --grid: rgba(255, 255, 255, .09); --grid-strong: #5D6E80;
-    --line: #5CD3F5; --line-ink: #04121A;
-    --signal: #FFB547; --signal-fill: #FFB547; --signal-ink: #1A1000;
-    --alert: #FF7A70; --alert-ink: #1A0503;
-    --ok: #5EE0A0; --focus: #FFB547;
-    --glass: rgba(20, 28, 40, .72);
-    --head-bg: #0D141E; --head-glass: rgba(7, 11, 18, .66);
-    --card-border: rgba(255, 255, 255, .10); --panel-border: rgba(255, 255, 255, .14);
-    --field-border: #7C8FA3; --btn-border: rgba(255, 255, 255, .22);
-    --btn-primary-bg: linear-gradient(180deg, #7BDDF8, #4CC6EC);
-    --btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 0 0 1px rgba(92, 211, 245, .3), 0 10px 28px -8px rgba(92, 211, 245, .55);
-    --shadow-1: 0 10px 30px -12px rgba(0, 0, 0, .7);
-    --shadow-2: 0 24px 50px -14px rgba(0, 0, 0, .8), 0 0 0 1px rgba(92, 211, 245, .18);
-    --bg-art: radial-gradient(44rem 34rem at 18% 0%, rgba(56, 189, 248, .20), transparent 62%), radial-gradient(38rem 28rem at 92% 30%, rgba(255, 181, 71, .12), transparent 62%), radial-gradient(52rem 40rem at 40% 110%, rgba(99, 102, 241, .16), transparent 62%);
-    --bg-art-lite: radial-gradient(36rem 26rem at 20% 0%, rgba(56, 189, 248, .16), transparent 62%);
     color-scheme: dark;
+    --paper: #0F1419; --surface: #171E25; --surface-2: #212A33;
+    --hairline: rgba(237, 231, 222, .12); --hairline-strong: rgba(237, 231, 222, .26);
+    --ink: #EDE7DE; --ink-2: #CFC7BB; --muted: #A3ACB4;
+    --line: #8DB4DA; --line-ink: #0B1622;
+    --signal: #FF8A4C; --signal-fill: #FF7A3A; --signal-ink: #1A0A02;
+    --alert: #FF8A80; --alert-ink: #1A0503; --ok: #7CC98E; --focus: #FF8A4C;
+    --st-taller: #E3937A; --st-concesionaria: #8DB4DA; --st-pista: #9CC39A;
+    --grid-strong: #6B7682; --field-border: #7D8790;
+    --head-bg: var(--paper); --head-glass: rgba(15, 20, 25, .78);
+    --glass: rgba(23, 30, 37, .90); --glass-strong: rgba(23, 30, 37, .94);
+    --glass-edge: inset 0 0 0 1px rgba(255, 255, 255, .06), 0 0 0 1px rgba(0, 0, 0, .4);
+    --shadow-1: 0 12px 30px -14px rgba(0, 0, 0, .7);
+    --shadow-2: 0 30px 60px -24px rgba(0, 0, 0, .85);
   }
 }
 :root[data-theme="dark"] {
-  --paper: #070B12; --surface: #121A26; --surface-2: #1B2634;
-  --ink: #EAF1F8; --ink-2: #C5D2DF; --muted: #A9B8C8;
-  --grid: rgba(255, 255, 255, .09); --grid-strong: #5D6E80;
-  --line: #5CD3F5; --line-ink: #04121A;
-  --signal: #FFB547; --signal-fill: #FFB547; --signal-ink: #1A1000;
-  --alert: #FF7A70; --alert-ink: #1A0503;
-  --ok: #5EE0A0; --focus: #FFB547;
-  --glass: rgba(20, 28, 40, .72);
-  --head-bg: #0D141E; --head-glass: rgba(7, 11, 18, .66);
-  --card-border: rgba(255, 255, 255, .10); --panel-border: rgba(255, 255, 255, .14);
-  --field-border: #7C8FA3; --btn-border: rgba(255, 255, 255, .22);
-  --btn-primary-bg: linear-gradient(180deg, #7BDDF8, #4CC6EC);
-  --btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 0 0 1px rgba(92, 211, 245, .3), 0 10px 28px -8px rgba(92, 211, 245, .55);
-  --shadow-1: 0 10px 30px -12px rgba(0, 0, 0, .7);
-  --shadow-2: 0 24px 50px -14px rgba(0, 0, 0, .8), 0 0 0 1px rgba(92, 211, 245, .18);
-  --bg-art: radial-gradient(44rem 34rem at 18% 0%, rgba(56, 189, 248, .20), transparent 62%), radial-gradient(38rem 28rem at 92% 30%, rgba(255, 181, 71, .12), transparent 62%), radial-gradient(52rem 40rem at 40% 110%, rgba(99, 102, 241, .16), transparent 62%);
-  --bg-art-lite: radial-gradient(36rem 26rem at 20% 0%, rgba(56, 189, 248, .16), transparent 62%);
   color-scheme: dark;
+  --paper: #0F1419; --surface: #171E25; --surface-2: #212A33;
+  --hairline: rgba(237, 231, 222, .12); --hairline-strong: rgba(237, 231, 222, .26);
+  --ink: #EDE7DE; --ink-2: #CFC7BB; --muted: #A3ACB4;
+  --line: #8DB4DA; --line-ink: #0B1622;
+  --signal: #FF8A4C; --signal-fill: #FF7A3A; --signal-ink: #1A0A02;
+  --alert: #FF8A80; --alert-ink: #1A0503; --ok: #7CC98E; --focus: #FF8A4C;
+  --st-taller: #E3937A; --st-concesionaria: #8DB4DA; --st-pista: #9CC39A;
+  --grid-strong: #6B7682; --field-border: #7D8790;
+  --head-bg: var(--paper); --head-glass: rgba(15, 20, 25, .78);
+  --glass: rgba(23, 30, 37, .90); --glass-strong: rgba(23, 30, 37, .94);
+  --glass-edge: inset 0 0 0 1px rgba(255, 255, 255, .06), 0 0 0 1px rgba(0, 0, 0, .4);
+  --shadow-1: 0 12px 30px -14px rgba(0, 0, 0, .7);
+  --shadow-2: 0 30px 60px -24px rgba(0, 0, 0, .85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; --t-med: 0ms; --t-slow: 0ms; }
 }

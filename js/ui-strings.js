@@ -31,18 +31,19 @@ export const EXTRA = {
     lesson: {
       code: 'L', figure: 'FIG.', maintenance: 'Mantenimiento', diagnosis: 'Diagnóstico',
       aside: 'Navegación de la lección', sameModule: 'En este módulo',
-      termHint: 'Ver en el glosario', glossaryKind: 'GLOSARIO', diagKind: 'DIAG', toTerm: 'Ir al término'
+      termHint: 'Ver en el glosario', glossaryKind: 'GLOSARIO', diagKind: 'DIAG', toTerm: 'Ir al término', seeInTour: 'Ver en el recorrido', stopOf: 'Parada {n} de {total}',
+      toc: 'En esta lección', pagerAria: 'Lecciones vecinas', verifiedShort: 'Verificado {date}', sourcesCount: ['1 fuente', '{n} fuentes']
     },
     diag: {
-      title: 'Diagnóstico por síntomas',
+      title: 'Diagnóstico por síntomas', expand: 'Ver causas y qué revisar',
       intro: 'Elegí o buscá lo que le pasa a tu auto. Es una guía orientativa: no reemplaza la revisión de un mecánico.',
       filter: 'Filtrar síntomas', filterPlaceholder: 'luz, ruido, olor, no arranca…',
-      symptom: 'Síntoma', all: 'Mostrando todos los síntomas', shown: ['Mostrando 1 síntoma', 'Mostrando {n} síntomas'], none: 'Ningún síntoma coincide. Probá con otra palabra.', openLesson: 'Ver la lección completa'
+      symptom: 'Síntoma', all: 'Mostrando todos los síntomas', shown: ['Mostrando 1 síntoma', 'Mostrando {n} síntomas'], none: 'Ningún síntoma coincide. Probá con otra palabra.', noneHint: 'Probá con un síntoma más corto (por ejemplo «ruido» o «luz») o borrá el filtro para ver todos.', clear: 'Borrar filtro', openLesson: 'Ver la lección completa'
     },
     glossary: {
       title: 'Glosario', intro: 'Términos de mecánica explicados de forma simple.',
       filter: 'Buscar en el glosario', filterPlaceholder: 'bujía, freno, aceite…',
-      jump: 'Saltar a la letra', related: 'Ver también', usedIn: 'Aparece en', count: ['1 término', '{n} términos'], none: 'Ningún término coincide.', code: 'GL'
+      jump: 'Saltar a la letra', related: 'Ver también', usedIn: 'Aparece en', count: ['1 término', '{n} términos'], none: 'Ningún término coincide.', noneHint: 'Probá con otra palabra o con menos letras, o borrá el filtro para ver los términos.', clear: 'Borrar filtro', code: 'GL', inLessons: ['En 1 lección', 'En {n} lecciones'], andMore: 'y {n} más', synonyms: 'También'
     },
     notFound: { code: '404', title: 'No encontramos esa página', text: 'La dirección no existe o cambió. Volvé al inicio o usá el buscador.', home: 'Volver al inicio' },
     // Página de créditos (#/creditos). Fuente: _proceso/realismo/creditos.md (v3). Atribución CC BY 4.0 de los modelos 3D usados en el recorrido.
@@ -55,7 +56,7 @@ export const EXTRA = {
       sourceLink: 'Ver en Sketchfab',
       license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
       models: [
-        { title: "Ace '11 - Low Poly model", author: 'Daniel Zhabotinsky', authorUrl: 'https://sketchfab.com/DanielZhabotinsky', url: 'https://sketchfab.com/3d-models/ace-11-low-poly-model-055ff8a21b8d4d279debca089e2fafcd', changes: 'Insignias y textos de patente quitados, una rueda quitada, materiales rehechos.' },
+        { title: "Ace '11 - Low Poly model", author: 'Daniel Zhabotinsky', authorUrl: 'https://sketchfab.com/DanielZhabotinsky', url: 'https://sketchfab.com/3d-models/ace-11-low-poly-model-055ff8a21b8d4d279debca089e2fafcd', changes: 'Insignias y textos de patente quitados, una rueda quitada y otra acostada como auxilio, materiales rehechos.' },
         { title: 'Tesla M3 model', author: 'wintrez', authorUrl: 'https://sketchfab.com/wintrez', url: 'https://sketchfab.com/3d-models/tesla-m3-model-3a602469d7874d1397efa67182198705', changes: 'Emblemas y textos de patente quitados, logo de llantas cubierto, materiales y escala ajustados.' },
         { title: '2010s Compact SUV', author: 'MaG80', authorUrl: 'https://sketchfab.com/MaG80', url: 'https://sketchfab.com/3d-models/2010s-compact-suv-4d5566ec52ec4385a0d2d2754c189490', changes: 'Textura de rejilla reemplazada, sombra horneada quitada, materiales y escala ajustados.' },
         { title: 'Compact sedan', author: 'MaG80', authorUrl: 'https://sketchfab.com/MaG80', url: 'https://sketchfab.com/3d-models/compact-sedan-2ce316358582406691fcea73d15009ef', changes: 'Textura de rejilla reemplazada, sombra horneada quitada, materiales y escala ajustados.' },
@@ -101,6 +102,37 @@ export const EXTRA = {
         imgAlt: '{station}: escena de la parada «{lesson}»'
       },
     },
+    // Portada = recorrido («Taller a la luz»). Nombres de estación: recorrido.stations; títulos y resúmenes de parada: content.json.
+    tour: {
+      aria: 'Recorrido: del taller a la ruta',
+      canvasAria: 'Escena renderizada de un taller, una concesionaria con surtidor y una ruta, que avanza con el scroll. La lista de paradas al pie de la página es equivalente.',
+      stats: { lessons: 'lecciones', terms: 'términos', stops: 'paradas' },
+      cue: 'Deslizá para entrar al taller',
+      stopCode: '{station} // Parada {n} de {total}',
+      detail: 'Ver detalle', lesson: 'Lección', terms: ['1 término', '{n} términos'],
+      railAria: 'Progreso del recorrido', tickAria: 'Parada {n} de {total}: {title}',
+      live: 'Parada {n} de {total}: {title}',
+      indexKicker: 'Índice del recorrido', indexTitle: 'Las {n} paradas, de un vistazo',
+      indexLead: 'Cada parada abre una lección. Si preferís leer sin scroll, este índice tiene lo mismo que el recorrido.',
+      staticNote: 'Tenés activado «reducir movimiento»: el recorrido se muestra como láminas fijas.',
+      loadFail: 'No se pudieron cargar las escenas. La lista de paradas al pie funciona igual.'
+    },
+    hotspots: {
+      group: 'En esta escena', aria: 'Ver detalle de {term}', ariaIll: 'Ver detalle de {term}. La escena solo lo ilustra: no es la pieza.',
+      kindPiece: 'Pieza', kindIll: 'Ilustra el término'
+    },
+    sheet: {
+      partsTitle: 'Despiece de esta parada', partsNote: 'Términos del glosario que usa la lección. Tocá uno para ver qué es.',
+      lessonPartsTitle: 'Despiece', lessonPartsNote: 'Términos del glosario que aparecen en esta lección. Tocá uno para ver qué es.',
+      terms: ['1 término', '{n} términos'], also: 'También', related: 'Relacionados',
+      inGlossary: 'Ver en el glosario', inLessons: 'aparece en {n} lecciones',
+      close: 'Cerrar detalle y seguir el recorrido', openLesson: 'Abrir la lección completa', keepGoing: 'Seguir el recorrido'
+    },
+    find: {
+      dialogLabel: 'Buscar en Mecánica Básica', open: 'Buscar', openAria: 'Buscar (atajo: barra)', hint: 'Esc', start: 'Para empezar', term: 'término',
+      count: ['1 resultado', '{n} resultados']
+    },
+    menu: { open: 'Menú', aria: 'Abrir el menú de secciones' },
     diagrams: {
       figure: 'FIG.',
       sketch: 'Esquema simplificado, sin escala.',

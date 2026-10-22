@@ -1,6 +1,6 @@
-import { h, svg } from '../lib/dom.js';
-import { MODULE_ICONS } from '../lib/icons.js';
-import { gauge } from '../lib/components.js';
+import { h, svg } from '../lib/dom.js?v=5';
+import { MODULE_ICONS } from '../lib/icons.js?v=5';
+import { gauge } from '../lib/components.js?v=5';
 
 export function render(el, ctx) {
   const { ui, model, params } = ctx;
@@ -13,7 +13,7 @@ export function render(el, ctx) {
     h('nav', { 'aria-label': ui.nav.modules }, h('p', { class: 'crumbs' },
       h('a', { href: '#/' }, ui.nav.home), ' / ', h('span', { 'aria-current': 'page' }, `${code} ${m.title}`))),
     h('header', { class: 'module-head' },
-      h('span', { class: 'ico' }, svg(MODULE_ICONS[m.id])),
+      h('span', { class: 'ico-lg' }, svg(MODULE_ICONS[m.id])),
       h('div', null, h('h1', null, m.title), h('p', null, m.description), gauge(m.nivel, ui))),
     m.id === 'diagnostico' ? h('div', { class: 'callout frame' }, h('p', null, ui.module.bySymptom),
       h('a', { class: 'btn btn-primary', href: '#/diagnostico' }, ui.module.bySymptomCta)) : null,

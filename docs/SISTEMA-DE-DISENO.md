@@ -1,74 +1,92 @@
-# Sistema de diseño
+# Sistema de diseño · «Taller a la luz»
 
-Estilo «manual técnico»: fondo de papel milimetrado, marcos de plano con cuadro de rotulación, tipografía condensada en mayúsculas para títulos, monoespaciada para etiquetas y códigos (MB-01, L-03, FIG.), y un acento azul de línea de plano con una señal ámbar. Sobrio, sin ilustración decorativa fuera de la portada y los esquemas.
+La interfaz se pinta con los materiales de las escenas renderizadas del recorrido (hormigón, zócalo azul, ladrillo, salvia de la pista) y usa el **naranja de seguridad** (crique, balizas, matafuego) como único acento. Tono de catálogo de repuestos y cartel de taller. La portada es el recorrido; las vistas internas (lección, glosario, diagnóstico, créditos) comparten cabecera, tipografía de lectura y componentes.
 
-Los valores salen de `css/tokens.css`; si hay diferencia, manda el archivo.
+Los valores salen de `css/tokens.css`; si hay diferencia, manda el archivo. La especificación completa, con las referencias estudiadas y las mediciones, está en la carpeta de proceso del proyecto (`_proceso/rediseno-v2/ESPECIFICACION.md`, no publicada).
 
 ## Archivos CSS
 
 | Archivo | Contenido |
 |---|---|
-| `tokens.css` | Variables (color, tipografía, espaciado) y los dos temas |
-| `base.css` | Reset, tipografía, fondo cuadriculado, cabecera, buscador, pie, botones, foco, `prefers-reduced-motion`, impresión |
-| `components.css` | Portada, tarjetas, cajas (`.box`), pasos, fichas técnicas, glosario, diagnóstico, fuentes |
+| `tokens.css` | Variables (color, tipografía, medidas, forma, movimiento) y los dos temas |
+| `base.css` | Reset, tipografía, rótulos (`.code`, `.cartel`, `.block-tag`), botones, cabecera (HUD de dos píldoras), paleta de búsqueda (`dialog.find`), pie, `prefers-reduced-motion`, impresión |
+| `components.css` | Despiece (`.parts`, `.part`, `.chip`), cajas (`.box`), lección (`.l-head`, `.l-fig`, `.l-grid`, `.toc`, `.prose`, `.side`, `.steps`, `.spec`, `.related`, `.pager`), barra de filtro (`.g-tools`, `.az`, `.field`), estado vacío (`.empty`), diagnóstico (`.symptoms`), glosario (`.letter-group`, `.gl-entry`), módulos, resultados, créditos |
+| `recorrido-continuo.css` | Portada: `.tr-stage`, título, tarjeta de parada, riel, láminas fijas, hoja de detalle (`dialog.sheet`), notas (`.note`) |
 | `diagrams.css` | Clases `dg-*` de los esquemas SVG |
 
-## Tokens de color
+## Tokens
+
+Los nombres son estables; para re-estilizar cambiá valores, no nombres.
 
 | Token | Claro | Oscuro | Uso |
 |---|---|---|---|
-| `--paper` | `#EEF2F3` | `#0B1218` | Fondo de página |
-| `--surface` / `--surface-2` | `#FFFFFF` / `#E3E9EC` | `#111C25` / `#172530` | Tarjetas, cajas / rellenos de esquemas |
-| `--ink` / `--ink-2` / `--muted` | `#0E1A24` / `#2C3B47` / `#4E5D69` | `#E3EAF0` / `#C3CFD8` / `#93A3B0` | Texto principal, secundario, auxiliar |
-| `--grid` / `--grid-strong` | `#D2DCE2` / `#8FA1AE` | `#1A2833` / `#4A6174` | Cuadrícula de fondo / bordes finos |
-| `--line` / `--line-ink` | `#1B4F8A` / `#FFFFFF` | `#6CC3E0` / `#0B1218` | Acento (enlaces, botón primario) y texto sobre él |
-| `--signal`, `--signal-fill`, `--signal-ink` | `#8A5A00`, `#F2B33D`, `#0E1A24` | `#F2B33D`, `#F2B33D`, `#0B1218` | Señal ámbar (tips, resaltados) |
-| `--alert` / `--alert-ink` | `#B3261E` / `#FFFFFF` | `#EF6A62` / `#0B1218` | Seguridad y «parar» |
-| `--ok` | `#1F6B45` | `#5CC48A` | Confirmaciones |
-| `--focus` | `#C2410C` | `#FFB86B` | Anillo de foco |
+| `--paper` | `#F2EDE6` | `#0F1419` | Fondo; también el «cielo» transparente del fotograma 1 |
+| `--surface` / `--surface-2` | `#FBF9F6` / `#E8E1D7` | `#171E25` / `#212A33` | Tarjetas, hojas, campos / bandas, notas, filas abiertas |
+| `--hairline` / `--hairline-strong` | tinta al 12 % / 24 % | tinta clara al 12 % / 26 % | Filetes de 1 px |
+| `--ink` / `--ink-2` / `--muted` | `#13202B` / `#2E3D4A` / `#55606A` | `#EDE7DE` / `#CFC7BB` / `#A3ACB4` | Texto principal, bajadas, secundario |
+| `--line` / `--line-ink` | `#1D3A57` / `#FFFFFF` | `#8DB4DA` / `#0B1622` | Marca, botón primario, letras del glosario / texto sobre él |
+| `--signal` | `#A63E0D` | `#FF8A4C` | Acento como **texto** (enlaces activos, códigos, subtítulos) |
+| `--signal-fill` | `#E85A1C` | `#FF7A3A` | Acento **no textual** (punto del riel, filetes, marcas) |
+| `--signal-ink` | `#FFFFFF` | `#1A0A02` | Texto sobre `--signal` |
+| `--alert` / `--ok` | `#B3261E` / `#2F6B3F` | `#FF8A80` / `#7CC98E` | Seguridad y «parar» / confirmaciones |
+| `--focus` | `#C2410C` | `#FF8A4C` | Anillo de foco: 2 px + 2 px de separación |
+| `--st-taller`, `--st-concesionaria`, `--st-pista` | `#9A4430`, `#36617F`, `#45694A` | `#E3937A`, `#8DB4DA`, `#9CC39A` | Estaciones del recorrido (siempre con texto) |
+| `--glass`, `--glass-strong`, `--glass-edge`, `--glass-blur` | superficie al 90 % / 94 % | ídem oscuro | Vidrio: solo sobre la escena (HUD, tarjeta, hoja) |
+| `--shadow-1`, `--shadow-2` | luz cenital corta | sombra profunda | Elevación |
 
-Para rehacer la identidad cambiá estos valores en **ambos** temas (bloque claro `:root`, bloque oscuro de `prefers-color-scheme` y bloque `:root[data-theme="dark"]`, que repiten las mismas variables). Los componentes no usan colores fijos: todo pasa por variables, incluso los esquemas.
+Los tres bloques de color (`:root`, `prefers-color-scheme: dark` con `:root:not([data-theme="light"])` y `:root[data-theme="dark"]`) repiten las mismas variables: al cambiar un valor, cambialo en los tres. Compatibilidad con nombres anteriores: `--grid`, `--grid-strong`, `--card-border`, `--panel-border`, `--field-border`, `--btn-*`, `--head-*`, `--bg-art*`.
 
-## Tipografías
+### Tipografía y medidas
 
-- `--font-display`: Barlow Condensed (500/600/700), títulos en mayúsculas.
-- `--font-body`: IBM Plex Sans (400/500/600), texto corrido a 1.0625rem y interlineado 1.6.
-- `--font-mono`: IBM Plex Mono (400/500/600), etiquetas, navegación, botones, códigos.
+| Token | Valor | Uso |
+|---|---|---|
+| `--font-display` / `--font-ui` | Bricolage Grotesque (eje de ancho 75–100) | Títulos, interfaz. Rótulos «cartel»: `wdth 78`, mayúsculas; título de portada: `wdth 86` |
+| `--font-body` | Source Serif 4 | Lectura (lecciones, definiciones, resúmenes) |
+| `--font-mono` | JetBrains Mono | Códigos y contadores (`PARADA 06 DE 18`, `GL-01`) |
+| `--fs-hero` / `--fs-1` / `--fs-2` / `--fs-3` | `clamp(3.25rem…9rem)` / `clamp(2.25rem…3.75rem)` / `clamp(1.5rem…2.125rem)` / `1.25rem` | Escala de títulos |
+| `--fs-body` / `--fs-ui` / `--fs-label` | 1.125rem / .9375rem / .75rem | Lectura 18 px, interfaz 15 px, rótulo mono 12 px |
+| `--lh-body` / `--lh-tight` | 1.62 / 1.02 | Interlineados |
+| `--measure` / `--measure-prose` | 104ch / 72ch | Tope del contenedor / párrafos largos |
+| `--gutter` | 16, 32 (≥ 900 px), 48 px (≥ 1280 px) | Margen lateral |
+| `--space-1` … `--space-8` | 4, 8, 12, 16, 24, 40, 64, 104 px | Espaciado |
+| `--radius`, `--r-sm`, `--r-md`, `--r-lg`, `--r-btn`, `--r-chip` | 6, 4, 6, 10, 6, 999 px | «Chapa plegada», chips en píldora |
+| `--ease-out`, `--ease-in-out`, `--t-fast`, `--t-med`, `--t-slow` | `cubic-bezier(.2,.7,.2,1)`, 140 / 260 / 520 ms | Movimiento; con `prefers-reduced-motion` los tiempos pasan a 0 |
 
-Se cargan desde Google Fonts en `index.html` (`preconnect` + hoja con `display=swap`). Fallbacks: `Arial Narrow`, `system-ui`, `ui-monospace`. Para evitar la dependencia externa, descargá los archivos de fuente, ponelos en una carpeta `fonts/`, declará `@font-face` con rutas relativas y quitá los `<link>` de Google (revisá las licencias de cada tipografía).
-
-## Espaciado, medida y radios
-
-`--space-1` a `--space-7` = 4, 8, 12, 16, 24, 40, 64 px. `--gutter` 16 px (32 px desde 768 px). `--measure: 104ch` es el ancho máximo de texto y cajas. `--radius: 2px` (casi cuadrado, a propósito).
+Las fuentes se cargan desde Google Fonts en `index.html` (licencia OFL). Para evitar la dependencia externa, descargá los archivos, declará `@font-face` con rutas relativas y quitá los `<link>`.
 
 ## Tema claro/oscuro
 
 1. Sin preferencia guardada manda `prefers-color-scheme`.
-2. El botón de la cabecera fuerza `data-theme="light|dark"` en `<html>` y lo guarda en `localStorage['mb-theme']`.
-3. Un script en el `<head>` de `index.html` aplica el tema guardado antes del primer pintado para evitar el parpadeo.
-4. `color-scheme` se declara en ambos temas para que los controles nativos coincidan.
+2. El botón de la cabecera fuerza `data-theme="light|dark"` en `<html>` y lo guarda en `localStorage['mb-theme']` (dentro de `try/catch`).
+3. Un script en el `<head>` aplica el tema guardado antes del primer pintado.
+4. El recorrido relee el color del papel con el evento `mb-theme`.
 
 ## Componentes y patrones
 
-- **Marco (`.frame`)**: borde y fondo de plano; lleva las tarjetas de módulo, la portada, los esquemas.
-- **Cuadro de rotulación (`.titleblock`)**: tabla de pares etiqueta/valor en la portada.
-- **Cajas (`.box`)**: `safety` (relleno `--alert` con rayado diagonal), `manual` (borde punteado `--line`, «verificá en el manual»), `tip` (borde izquierdo ámbar), `stop` (borde `--alert`, «cuándo parar y llamar»).
-- **Indicador de nivel (`.gauge`)**: aguja de reloj, de 1 a 3.
-- **Pasos (`.steps`)**: lista numerada con contador CSS.
-- **Ficha técnica (`.spec`)**: pares etiqueta/valor para el bloque de mantenimiento.
-- **Etiquetas (`.label`, `.block-tag`)**: mono en mayúsculas.
-- **Término resaltado (`a.term`)** y **chips** de relacionados.
+- **Despiece (`disclosure()` / `despiece()` en `js/lib/components.js`)**: lista numerada `01…NN`; cada fila es `h > button[aria-expanded][aria-controls]` con «+/−» y un panel `role="region"`. Se usa en la hoja de detalle del recorrido, en la lección (columna lateral), y, con `level: 'h2'`, en el diagnóstico (cada síntoma es una fila). El panel muestra definición, «También», chips de relacionados y enlace al glosario.
+- **Hoja de detalle (`dialog.sheet`, `js/lib/hoja-detalle.js`)**: `<dialog>` nativo con `showModal()`; hoja lateral de 480 px (escritorio) o inferior de hasta 88 dvh (≤ 700 px). `html.is-locked` ancla la página.
+- **Tarjeta de parada (`.tr-card`)**: vidrio sobre la escena en escritorio; **sólida** (`--surface`) en retrato (`max-aspect-ratio: 4/5`), debajo de la lámina.
+- **Riel (`.tr-rail`)**: tres estaciones proporcionales al scroll, línea de progreso, punto naranja y 18 marcas-botón.
+- **Lección**: `header.l-head` (migas, rótulo-cartel del módulo, nivel, `h1`, resumen en serif, metadatos mono) · `figure.l-fig` (lámina 21:9 con el fotograma de la parada y «Ver en el recorrido»; las lecciones sin parada llevan el ícono del módulo) · `.l-grid`: desde 1240 px índice fijo `.toc` | `.prose` | `.side` (176 / flexible / 300 px); de 900 a 1239 px `.prose` | `.side`; en móvil una columna. Secciones numeradas `.l-sec`; pasos (`.steps`) con contador mono naranja; pager «anterior / siguiente».
+- **Cajas (`.box`)**: `safety` (filete y fondo naranja suave), `manual` (filete `--line`), `tip`, `stop` (`--alert`), `mistakes`. En la hoja de detalle y el diagnóstico, el equivalente es `.note` / `.note--warn`.
+- **Glosario y diagnóstico**: cabecera `.l-head` igual a la lección; barra pegajosa `.g-tools` con campo `.field`, cuenta en vivo (`role="status"`) y, en el glosario, A–Z (`.az`; las letras sin términos quedan atenuadas y deshabilitadas). Entradas `.gl-entry` con definición, «También», chips de relacionados y «En N lecciones» (las tres primeras y el resto en `<details>`). Estado vacío `.empty` con mensaje, ayuda y botón «Borrar filtro».
+- **Indicador de nivel (`.gauge`)**, **chips (`.chip`)**, **término resaltado (`a.term`)** con tooltip, **ficha técnica (`.spec`)**, **fuentes (`.sources`)**.
+- **Rótulos**: `.code` (mono, mayúsculas), `.cartel` (ancho condensado, mayúsculas), `.block-tag` (con filete naranja).
 - **Esquemas**: clases `dg-ink`, `dg-fill`, `dg-line`, `dg-hot`, `dg-thin`, `dg-flame`, `dg-arrow`, `dg-mark`, `dg-text`.
 
 ## Accesibilidad de diseño
 
-- Mínimo 44 px de alto en elementos interactivos principales; 48 px en campos de búsqueda.
-- Foco: contorno de 2 px más halo (`--focus`), visible en ambos temas.
-- Contraste: las notas de QA del proyecto registran 0 fallas AA sobre el contenido de ese momento (mediciones por cálculo WCAG en 9 vistas × 2 temas). No se repitió al cambiar tokens: si tocás colores, volvé a medir.
-- Movimiento: transiciones cortas, anuladas con `prefers-reduced-motion`.
-- Responsive: una columna en móvil; lección en dos columnas desde 1000 px; la cabecera y la navegación se reacomodan sin scroll horizontal (medido a 375, 768 y 1280 px en QA).
-- Impresión: se ocultan cabecera, buscador y botones del pie; fondo blanco.
+- Objetivos interactivos de al menos 44 px (las marcas del riel miden 24 px solo en escritorio); campos de 48 px.
+- Foco: 2 px `--focus` + 2 px de separación; los encabezados enfocados por código no muestran anillo.
+- Contraste medido por cálculo WCAG 2.x (colores compuestos sobre sus fondos reales) en lección, glosario, diagnóstico y créditos, claro y oscuro, a 375 y 1280 px: 0 fallas AA (los controles deshabilitados, como las letras sin términos, quedan fuera de la regla). Si tocás colores, volvé a medir.
+- Movimiento: con `prefers-reduced-motion` no hay canvas ni inercia; el recorrido pasa a láminas fijas (en demos, `?rm=1`).
+- Responsive: sin scroll horizontal a 375 px; en retrato, la escena es una lámina arriba y la tarjeta sólida va debajo (nunca texto sobre la imagen).
+- Impresión: se ocultan cabecera, diálogos y botones del pie; fondo blanco.
+
+## Caché
+
+Los módulos JS (`import … from './x.js?v=N'`), los CSS y `main.js` del `index.html`, y `data/content.json` llevan `?v=N` (hoy `4`); los fotogramas usan `?v=3`. Al desplegar un cambio, subí el número en todos a la vez (los `import` de `js/` deben coincidir entre sí para que cada módulo se cargue una sola vez). Un reemplazo masivo sirve: buscar `?v=5` en `index.html` y `js/` y cambiarlo por `?v=5`.
 
 ## Alternativas exploradas
 
-Antes de implementar se compararon dos tableros (carpeta de proceso del proyecto, no publicada): «Taller de barrio» y «Manual técnico». Se eligió el segundo. Si querés otra identidad, el cambio se concentra en `tokens.css`, `icons.js` y el fondo de `base.css`.
+Se descartaron las identidades «Taller de barrio» y «Manual técnico» (papel milimetrado, acento azul y ámbar). La dirección actual se eligió tras estudiar referencias (Emons, Apple, Linear, Stripe, Igloo, The Pudding) documentadas en la especificación del proceso. Si querés otra identidad, el cambio se concentra en `tokens.css`, `icons.js` y los fotogramas del recorrido.

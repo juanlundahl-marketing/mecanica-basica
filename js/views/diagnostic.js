@@ -1,5 +1,7 @@
-import { h } from '../lib/dom.js';
-import { norm, plural, hasWordStart } from '../lib/text.js';
+import { h } from '../lib/dom.js?v=5';
+import { norm, plural, hasWordStart } from '../lib/text.js?v=5';
+import { disclosure } from '../lib/components.js?v=5';
+import { ico } from '../lib/icons.js?v=5';
 
 export function render(el, ctx) {
   const { ui, model } = ctx;
@@ -7,35 +9,43 @@ export function render(el, ctx) {
   const items = model.lessons.filter((l) => l.diagnostico).map((l) => ({
     l, key: norm([l.titulo, l.resumen, ...l.diagnostico.causasProbables, ...l.diagnostico.revisarPrimero, l.diagnostico.pararYLlamar].join(' '))
   }));
-  const status = h('p', { class: 'status', role: 'status', 'aria-live': 'polite' }, ui.diag.all);
+  const status = h('p', { class: 'status code', role: 'status', 'aria-live': 'polite' }, ui.diag.all);
   const input = h('input', { id: 'dg-q', type: 'search', placeholder: ui.diag.filterPlaceholder, autocomplete: 'off', enterkeyhint: 'search' });
-  const list = h('ul', { class: 'symptoms' }, items.map(({ l }) => h('li', { class: 'symptom', id: `sy-${l.id}` },
-    h('article', { 'aria-labelledby': `syt-${l.id}` },
-      h('h2', { id: `syt-${l.id}` }, h('a', { href: `#/leccion/${l.id}` }, l.titulo)),
-      h('ol', { class: 'flow' },
-        h('li', { class: 'frame symptom-a' }, h('h3', null, `A · ${ui.diag.symptom}`), h('p', null, l.resumen),
-          h('p', null, h('a', { href: `#/leccion/${l.id}` }, ui.diag.openLesson))),
-        h('li', { class: 'frame' }, h('h3', null, `B · ${ui.labels.probableCauses}`), h('ul', null, l.diagnostico.causasProbables.map((t) => h('li', null, t)))),
-        h('li', { class: 'frame' }, h('h3', null, `C · ${ui.labels.checkFirst}`), h('ul', null, l.diagnostico.revisarPrimero.map((t) => h('li', null, t)))),
-        h('li', { class: 'frame go' }, h('h3', null, `D · ${ui.labels.stopAndCall}`), h('p', null, l.diagnostico.pararYLlamar)))))));
-  const none = h('p', { hidden: true }, ui.diag.none);
+  // Cada síntoma es una fila del componente Despiece: el botón despliega causas, qué revisar y cuándo parar.
+  const rows = new Map();
+  const list = h('ol', { class: 'parts symptoms' }, items.map(({ l }, i) => {
+    const mod = model.modulesById.get(l.modulo);
+    const li = disclosure({ n: i + 1, title: l.titulo, sub: l.resumen, level: 'h2', body: [ // el resumen ya va como bajada del botón: no se repite adentro
+      h('div', { class: 'dg-cols' },
+        h('div', null, h('h3', { class: 'cartel dg-h' }, ui.labels.probableCauses), h('ul', null, l.diagnostico.causasProbables.map((t) => h('li', null, t)))),
+        h('div', null, h('h3', { class: 'cartel dg-h' }, ui.labels.checkFirst), h('ol', { class: 'dg-steps' }, l.diagnostico.revisarPrimero.map((t) => h('li', null, t))))),
+      l.diagnostico.pararYLlamar ? h('div', { class: 'note note--warn', style: 'margin-top:16px' }, ico('warn'), h('div', null, h('h3', { class: 'cartel' }, ui.labels.stopAndCall), h('p', null, l.diagnostico.pararYLlamar))) : null,
+      h('a', { class: 'go', href: `#/leccion/${l.id}` }, ui.diag.openLesson, ico('arrow'))] });
+    if (mod) li.querySelector('.tt').before(h('span', { class: 'code dg-mod' }, mod.title));
+    li.id = `sy-${l.id}`; rows.set(l.id, li); return li;
+  }));
+  const clear = h('button', { class: 'btn', type: 'button' }, ui.diag.clear);
+  const none = h('div', { class: 'empty', hidden: true }, h('p', { class: 'big' }, ui.diag.none), h('p', null, ui.diag.noneHint), clear);
   const apply = () => {
     const tk = norm(input.value).split(/\s+/).filter(Boolean);
     let n = 0;
     items.forEach(({ l, key }) => {
       const ok = tk.every((t) => hasWordStart(key, t));
-      list.querySelector(`#sy-${l.id}`).hidden = !ok;
+      rows.get(l.id).hidden = !ok;
       if (ok) n++;
     });
-    none.hidden = n > 0;
     status.textContent = !tk.length ? ui.diag.all : n ? plural(n, ui.diag.shown) : ui.diag.none;
+    none.hidden = n > 0;
   };
   input.addEventListener('input', apply);
-  el.replaceChildren(h('div', { class: 'wrap view' },
-    h('nav', { 'aria-label': ui.nav.home }, h('p', { class: 'crumbs' }, h('a', { href: '#/' }, ui.nav.home), ' / ', h('span', { 'aria-current': 'page' }, ui.diag.title))),
-    h('p', { class: 'block-tag' }, `${ui.module.code}-04`),
-    h('h1', null, ui.diag.title), h('p', null, ui.diag.intro),
-    h('div', { class: 'filter' }, h('label', { class: 'label', for: 'dg-q' }, ui.diag.filter), input),
-    status, list, none));
+  clear.addEventListener('click', () => { input.value = ''; apply(); input.focus(); });
+  el.replaceChildren(
+    h('header', { class: 'wrap l-head' },
+      h('nav', { 'aria-label': ui.nav.home }, h('p', { class: 'crumbs' }, h('a', { href: '#/' }, ui.nav.home), ' / ', h('span', { 'aria-current': 'page' }, ui.diag.title))),
+      h('p', { class: 'eyebrow' }, h('span', { class: 'cartel' }, `${ui.module.code}-04`), h('span', { class: 'code' }, plural(items.length, ui.diag.shown))),
+      h('h1', null, ui.diag.title), h('p', { class: 'summary' }, ui.diag.intro)),
+    h('div', { class: 'g-tools' }, h('div', { class: 'wrap' },
+      h('label', { class: 'field', for: 'dg-q' }, ico('search'), h('span', { class: 'vh' }, ui.diag.filter), input), status)),
+    h('div', { class: 'wrap g-body' }, list, none)); // el estado vacío repite el aviso del aria-live con ayuda para salir
   return () => {};
 }

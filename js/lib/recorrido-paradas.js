@@ -27,3 +27,15 @@ export const PARADAS = [
   ['susp-pinchadura-cambio-rueda', 'pista', 1504, 1522],
   ['diag-luces-colores-airbag-tpms', 'pista', 1544, 1562]
 ];
+
+// ---- Derivados para la portada (sin texto propio: nombres de estación en ui-strings, títulos en content.json) ----
+export const STATION_UI = { taller: 'taller', concesionaria: 'concesionaria', pista: 'ruta' }; // id del render -> id en ui.recorrido.stations
+export const ST_VAR = { taller: '--st-taller', concesionaria: '--st-concesionaria', pista: '--st-pista' };
+/** Paradas con su lección, estación y número (k = índice base 0). Las que no tengan lección en content.json se omiten. */
+export function buildStops(ctx) {
+  const list = ctx.ui.recorrido.stations;
+  const st = (e) => list.find((s) => s.id === STATION_UI[e]);
+  const rows = PARADAS.map(([id, est, desde, hasta]) => ({ id, est, desde, hasta, l: ctx.model.lessonsById.get(id) })).filter((s) => s.l);
+  return rows.map((s, k) => ({ ...s, k, total: rows.length, mid: Math.round((s.desde + s.hasta) / 2), short: st(s.est).map, name: st(s.est).title, cvar: ST_VAR[s.est] }));
+}
+export const stationNum = (est) => String(Object.keys(ESTACIONES).indexOf(est) + 1).padStart(2, '0');

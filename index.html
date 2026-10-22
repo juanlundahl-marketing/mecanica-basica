@@ -2,10 +2,12 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mecánica Básica</title>
 <meta name="description" content="Material de estudio para entender cómo funciona un auto, qué mantener y qué mirar cuando algo no anda bien.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F2EDE6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1419" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mecánica Básica">
 <meta property="og:title" content="Mecánica Básica: entendé cómo funciona tu auto">
@@ -17,30 +19,32 @@
 <meta property="og:image:alt" content="Tarjeta de Mecánica Básica: manual para principiantes sobre cómo funciona un auto, con un engranaje y los temas frenos, motor, eléctrico, suspensión e híbridos.">
 <meta property="og:locale" content="es_AR">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%231B4F8A'/%3E%3Cpath d='M6 30a16 16 0 1128 0' fill='none' stroke='white' stroke-width='3'/%3E%3Cpath d='M20 26L29 14' stroke='%23F2B33D' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='6' fill='%231D3A57'/%3E%3Cpath d='M20 5l12.5 7.2v14.6L20 34 7.5 26.8V12.2z' fill='none' stroke='white' stroke-width='2.6' stroke-linejoin='round'/%3E%3Ccircle cx='20' cy='19.5' r='4.6' fill='%23E85A1C'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/diagrams.css">
-<link rel="stylesheet" href="css/recorrido-continuo.css">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css?v=5">
+<link rel="stylesheet" href="css/base.css?v=5">
+<link rel="stylesheet" href="css/components.css?v=5">
+<link rel="stylesheet" href="css/diagrams.css?v=5">
+<link rel="stylesheet" href="css/recorrido-continuo.css?v=5">
 <script>
+  // Versión de despliegue: subir el número en index.html (CSS y main.js) y en los import de js/ para invalidar cachés.
+  // Fotograma 1 (portada): se pide ya, antes de que cargue el módulo (el recorrido reutiliza esta respuesta).
+  try { if (location.protocol.indexOf('http') === 0 && /^#?\/?(\?.*)?$/.test(location.hash)) window.__mbF1 = fetch('assets/recorrido/f_0001.webp?v=3', { priority: 'high' }).catch(function () { return null; }); } catch (e) {}
   // Tema guardado (si existe) antes del primer pintado; sin preferencia manda el sistema.
   try { var t = localStorage.getItem('mb-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
 </script>
 </head>
 <body>
 <a class="skip" id="skip" href="#main"></a>
-<header class="site-head" id="site-head"></header>
-<div class="search-bar" id="search-bar"></div>
+<header class="top" id="site-head"></header>
 <p class="vh" role="status" aria-live="polite" id="live-search"></p>
 <p class="vh" role="status" aria-live="polite" id="live-route"></p>
 <main id="main" tabindex="-1"></main>
 <footer class="site-foot" id="site-foot"></footer>
 <noscript><p style="padding:16px">Este sitio necesita JavaScript para mostrar las lecciones.</p></noscript>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=5"></script>
 <script>
   // El enlace de salto no usa hash (lo usa el router): mueve el foco al contenido.
   document.getElementById('skip').addEventListener('click', function (e) { e.preventDefault(); var m = document.getElementById('main'); m.focus(); m.scrollIntoView(); });

@@ -1,4 +1,4 @@
-import { h } from '../lib/dom.js';
+import { h } from '../lib/dom.js?v=5';
 
 // Página de créditos: atribución CC BY 4.0 de los modelos 3D. Todo el texto sale de ui.credits.
 export function render(el, ctx) {

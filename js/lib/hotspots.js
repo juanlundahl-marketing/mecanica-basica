@@ -5,7 +5,7 @@ import { h } from './dom.js?v=8';
 let pending = null;
 export function loadHotspots() {
   if (!pending) pending = (location.protocol.startsWith('http')
-    ? fetch('data/hotspots.json?v=8').then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null))
+    ? fetch('data/hotspots.json?v=9').then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null))
     .then((d) => (d && Array.isArray(d.paradas) ? d : null));
   return pending;
 }

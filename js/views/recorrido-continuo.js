@@ -5,9 +5,9 @@
 import { h } from '../lib/dom.js?v=8';
 import { ico } from '../lib/icons.js?v=8';
 import { plural } from '../lib/text.js?v=8';
-import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=8';
+import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=9';
 import { openDetail } from '../lib/hoja-detalle.js?v=8';
-import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=8';
+import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=9';
 
 const pad = (n) => String(n).padStart(2, '0');
 const fill = (t, o) => t.replace(/\{(\w+)\}/g, (_, k) => o[k]);
@@ -126,7 +126,7 @@ export function mountTour(host, ctx, stops, opts = {}) {
      y se decodifica bajo demanda a ImageBitmap (~2 MB c/u, caché por distancia): es la que se ve mientras la cámara se mueve, siempre el
      fotograma exacto. COMPLETA (assets/recorrido, 1920×1080): solo cuando la cámara se detiene (velocidad < SLOW durante SETTLE ms) se pide
      y decodifica el fotograma exacto y se funde en 80 ms. Modo ligero: solo la liviana. */
-  const LO_URL = (i) => `assets/recorrido-lo/f_${String(i).padStart(4, '0')}.webp?v=1`;
+  const LO_URL = (i) => `assets/recorrido-lo/f_${String(i).padStart(4, '0')}.webp?v=${i >= 922 && i <= 988 ? 2 : 1}`; // v2: parada 09 (922-988)
   const FULL = !lite;
   const lo = new Map(), full = new Map(), loBlob = new Map(), fullBlob = new Map(), net = new Map(), dec = new Set();
   const LO_CAP = lite ? 30 : 150, FULL_CAP = 1, FULL_BLOB_CAP = 6;         // ≈ 150 × 2,07 MB + 8,3 MB + blobs (~31 MB) ≈ 350 MB en escritorio

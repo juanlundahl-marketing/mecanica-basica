@@ -3,19 +3,19 @@ import { h } from './lib/dom.js?v=8';
 import { buildModel, search } from './lib/model.js?v=8';
 import { plural } from './lib/text.js?v=8';
 import { ico } from './lib/icons.js?v=8';
-import { buildStops } from './lib/recorrido-paradas.js?v=8';
+import { buildStops } from './lib/recorrido-paradas.js?v=9';
 import { closeDetail } from './lib/hoja-detalle.js?v=8';
 import { EXTRA } from './ui-strings.js?v=8';
 import { resultGroups, totalOf } from './views/search.js?v=8';
-import * as home from './views/home.js?v=8';
+import * as home from './views/home.js?v=9';
 import * as moduleView from './views/module.js?v=8';
-import * as lesson from './views/lesson.js?v=8';
+import * as lesson from './views/lesson.js?v=9';
 import * as diagnostic from './views/diagnostic.js?v=8';
 import * as glossary from './views/glossary.js?v=8';
 import * as searchView from './views/search.js?v=8';
 import * as credits from './views/creditos.js?v=8';
 import * as notfound from './views/notfound.js?v=8';
-import * as recorrido from './views/recorrido-continuo.js?v=8';
+import * as recorrido from './views/recorrido-continuo.js?v=9';
 
 const ROUTES = [
   [/^\/?$/, home, 'home'],

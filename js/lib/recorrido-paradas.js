@@ -1,7 +1,7 @@
 // Secuencia prerrenderizada del recorrido continuo: fotogramas y paradas (copiado de recorrido.json; sin texto visible).
 // Cada parada = [id de lección, estación, fotograma desde, fotograma hasta]. Los títulos salen de content.json.
 export const FRAMES = 1640;
-export const FRAME_URL = (i) => `assets/recorrido/f_${String(i).padStart(4, '0')}.webp?v=3`;
+export const FRAME_URL = (i) => `assets/recorrido/f_${String(i).padStart(4, '0')}.webp?v=${i >= 922 && i <= 988 ? 4 : 3}`; // v4: parada 09 reencuadrada (922-988)
 export const ESTACIONES = {
   taller: [1, 800],
   concesionaria: [801, 1250],

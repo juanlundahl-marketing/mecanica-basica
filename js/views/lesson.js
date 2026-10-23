@@ -3,7 +3,7 @@ import { makeHighlighter, plural } from '../lib/text.js?v=8';
 import { ico, MODULE_ICONS } from '../lib/icons.js?v=8';
 import { lessonPos } from '../lib/model.js?v=8';
 import { gauge, safetyBox, manualBox, listBox, despiece } from '../lib/components.js?v=8';
-import { buildStops, FRAME_URL as FR } from '../lib/recorrido-paradas.js?v=8';
+import { buildStops, FRAME_URL as FR } from '../lib/recorrido-paradas.js?v=9';
 import { diagramFor } from '../lib/diagrams.js?v=8';
 
 function srcItem(f, s) {

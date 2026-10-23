@@ -2,8 +2,8 @@
 import { h, svg } from '../lib/dom.js?v=8';
 import { MODULE_ICONS } from '../lib/icons.js?v=8';
 import { gauge } from '../lib/components.js?v=8';
-import { buildStops, ESTACIONES, stationNum } from '../lib/recorrido-paradas.js?v=8';
-import { mountTour, mountStatic, forcedStatic } from './recorrido-continuo.js?v=8';
+import { buildStops, ESTACIONES, stationNum } from '../lib/recorrido-paradas.js?v=9';
+import { mountTour, mountStatic, forcedStatic } from './recorrido-continuo.js?v=9';
 
 export const styles = [];
 

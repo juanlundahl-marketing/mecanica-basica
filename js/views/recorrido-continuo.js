@@ -2,12 +2,12 @@
 // Motor: decodificación fuera del hilo (createImageBitmap, recortado al área visible), precarga priorizada alrededor del fotograma
 // actual, un solo rAF con inercia independiente de los FPS, canvas a DPR acotado. Con prefers-reduced-motion: láminas fijas por parada.
 // El contenido es accesible sin el canvas: tarjeta/riel con teclado + índice de paradas al pie (en home.js).
-import { h } from '../lib/dom.js?v=7';
-import { ico } from '../lib/icons.js?v=7';
-import { plural } from '../lib/text.js?v=7';
-import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=7';
-import { openDetail } from '../lib/hoja-detalle.js?v=7';
-import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=7';
+import { h } from '../lib/dom.js?v=8';
+import { ico } from '../lib/icons.js?v=8';
+import { plural } from '../lib/text.js?v=8';
+import { FRAMES as N, FRAME_URL as FR, ESTACIONES, buildStops, stationNum } from '../lib/recorrido-paradas.js?v=8';
+import { openDetail } from '../lib/hoja-detalle.js?v=8';
+import { loadHotspots, pointsOf, hsAt, hsButton } from '../lib/hotspots.js?v=8';
 
 const pad = (n) => String(n).padStart(2, '0');
 const fill = (t, o) => t.replace(/\{(\w+)\}/g, (_, k) => o[k]);
@@ -117,7 +117,6 @@ export function mountTour(host, ctx, stops, opts = {}) {
      histéresis): el objetivo se cuantiza a esa grilla, así siempre es un fotograma liviano exacto ya decodificado, sin desfase. */
   let G = 1, QS = STEP;
   const snap = (f) => 1 + Math.floor((Math.max(1, Math.min(N, f)) - 1) / QS) * QS;
-  const PERF = /[?&]perf=1/.test(location.search + location.hash);   // overlay de diagnóstico (js/lib/perf-overlay.js), solo con ?perf=1
   const rec = (a, v) => { a.push(v); if (a.length > 1500) a.splice(0, 500); };   // muestras acotadas (costo O(1) amortizado)
   const stats = { why: {}, loaded: 0, drawn: 0, miss: 0, lag: 0, lo: 0, full: 0, jumps: 0, dts: [], draws: [], hss: [], dec: [], net: [], settle: [], gen: 0 };
   let W = 1, H = 1, tourTop = 0, total = 0, HPX = 1, railW = 1, paper = '#F2EDE6';
@@ -493,11 +492,9 @@ export function mountTour(host, ctx, stops, opts = {}) {
   window.__mb = { stats, lite, goStop, frame: () => curF, total: () => total, bm: () => lo.size, kf: () => full.size, cap: () => LO_CAP, size: () => [W, H],
     inflight: () => net.size, decoding: () => decN, blobs: () => [loBlob.size, loBytes, loNeed, fullBlob.size], speed: () => vf, css: () => [CW, CH],
     step: () => { cancelAnimationFrame(raf); raf = 0; tick(performance.now()); }, draw: () => { dirty = true; draw(); }, setFrame: (f) => { curF = f; dirty = true; }, paper: () => paper, ctx2d: g, lo, full, layout, yOf: yOfFrame, top: () => tourTop, settle: () => { yT = yC = Math.max(0, Math.min(total, scrollY - tourTop)); curF = frameOfY(yC); hp = Math.min(1, yC / HPX); dirty = true; tick(performance.now()); }, hs: () => HS, cardBox: () => cardBox, place: () => placeCache, rect: () => ({ tourRect, DP, CW, CH, band, headH }) };
-  let perfOff = () => {};
-  if (PERF) import('../lib/perf-overlay.js?v=7').then((m) => { if (!dead) perfOff = m.mountPerf(window.__mb, ui.perf); }).catch(() => {});
   return () => {
     savedY = scrollY; dead = true; cancelAnimationFrame(raf); clearTimeout(liveT); off.forEach((f) => f());
-    clearTimeout(idleT); for (const ac of net.values()) ac.abort(); net.clear(); loBlob.clear(); fullBlob.clear(); perfOff();
+    clearTimeout(idleT); for (const ac of net.values()) ac.abort(); net.clear(); loBlob.clear(); fullBlob.clear();
     for (const v of lo.values()) v.close(); for (const v of full.values()) v.close(); lo.clear(); full.clear(); delete window.__mb;
   };
 }

@@ -1,9 +1,9 @@
 // Portada = recorrido. Debajo: índice accesible de las paradas, catálogo de módulos y «cómo usar este sitio».
-import { h, svg } from '../lib/dom.js?v=7';
-import { MODULE_ICONS } from '../lib/icons.js?v=7';
-import { gauge } from '../lib/components.js?v=7';
-import { buildStops, ESTACIONES, stationNum } from '../lib/recorrido-paradas.js?v=7';
-import { mountTour, mountStatic, forcedStatic } from './recorrido-continuo.js?v=7';
+import { h, svg } from '../lib/dom.js?v=8';
+import { MODULE_ICONS } from '../lib/icons.js?v=8';
+import { gauge } from '../lib/components.js?v=8';
+import { buildStops, ESTACIONES, stationNum } from '../lib/recorrido-paradas.js?v=8';
+import { mountTour, mountStatic, forcedStatic } from './recorrido-continuo.js?v=8';
 
 export const styles = [];
 

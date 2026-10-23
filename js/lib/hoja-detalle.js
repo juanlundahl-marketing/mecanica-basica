@@ -1,8 +1,8 @@
 // Hoja de detalle por parada: <dialog> nativo (foco atrapado, Esc, fondo inerte). El recorrido queda anclado (html.is-locked).
-import { h } from './dom.js?v=7';
-import { ico } from './icons.js?v=7';
-import { despiece } from './components.js?v=7';
-import { plural } from './text.js?v=7';
+import { h } from './dom.js?v=8';
+import { ico } from './icons.js?v=8';
+import { despiece } from './components.js?v=8';
+import { plural } from './text.js?v=8';
 
 let dlg = null, returnTo = null, navigated = false;
 

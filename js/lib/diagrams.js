@@ -1,6 +1,6 @@
 // Esquemas SVG originales y accesibles. Los textos salen de ui-strings (ui.diagrams).
 // Cada función devuelve { el, cleanup }; las referencias numéricas se explican en una leyenda HTML.
-import { h, svg } from './dom.js?v=7';
+import { h, svg } from './dom.js?v=8';
 
 let uid = 0;
 const nid = (p) => `${p}-${++uid}`;

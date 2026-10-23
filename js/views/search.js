@@ -1,6 +1,6 @@
-import { h } from '../lib/dom.js?v=7';
-import { search } from '../lib/model.js?v=7';
-import { plural } from '../lib/text.js?v=7';
+import { h } from '../lib/dom.js?v=8';
+import { search } from '../lib/model.js?v=8';
+import { plural } from '../lib/text.js?v=8';
 
 /** Lista agrupada de resultados; la usan el panel del buscador y la vista completa. */
 export function resultGroups(res, ui, limit) {

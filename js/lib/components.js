@@ -1,8 +1,8 @@
 // Componentes compartidos entre vistas.
-import { h, svg } from './dom.js?v=7';
-import { WARN, ico } from './icons.js?v=7';
-import { plural } from './text.js?v=7';
-import { levelNum } from './model.js?v=7';
+import { h, svg } from './dom.js?v=8';
+import { WARN, ico } from './icons.js?v=8';
+import { plural } from './text.js?v=8';
+import { levelNum } from './model.js?v=8';
 
 export function gauge(nivel, ui, extra) {
   const n = levelNum(nivel);

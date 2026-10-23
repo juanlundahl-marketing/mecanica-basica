@@ -1,10 +1,10 @@
-import { h, svg } from '../lib/dom.js?v=7';
-import { makeHighlighter, plural } from '../lib/text.js?v=7';
-import { ico, MODULE_ICONS } from '../lib/icons.js?v=7';
-import { lessonPos } from '../lib/model.js?v=7';
-import { gauge, safetyBox, manualBox, listBox, despiece } from '../lib/components.js?v=7';
-import { buildStops, FRAME_URL as FR } from '../lib/recorrido-paradas.js?v=7';
-import { diagramFor } from '../lib/diagrams.js?v=7';
+import { h, svg } from '../lib/dom.js?v=8';
+import { makeHighlighter, plural } from '../lib/text.js?v=8';
+import { ico, MODULE_ICONS } from '../lib/icons.js?v=8';
+import { lessonPos } from '../lib/model.js?v=8';
+import { gauge, safetyBox, manualBox, listBox, despiece } from '../lib/components.js?v=8';
+import { buildStops, FRAME_URL as FR } from '../lib/recorrido-paradas.js?v=8';
+import { diagramFor } from '../lib/diagrams.js?v=8';
 
 function srcItem(f, s) {
   const texto = typeof f === 'string' ? f : f.texto;

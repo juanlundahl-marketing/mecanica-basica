@@ -162,11 +162,3 @@ dialog.sheet::backdrop { background: rgba(15, 20, 25, .22); }
    (caro a 4K). Fondo casi opaco + borde y sombra; el desenfoque queda en la hoja de detalle y en las vistas estáticas. */
 body[data-route="home"] .nav-panel { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--surface); }
 
-/* Overlay de diagnóstico (?perf=1) */
-.perf { position: fixed; z-index: 90; left: 12px; top: 76px; max-width: min(640px, calc(100vw - 24px)); padding: 10px 12px; border-radius: var(--r-md);
-  background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--hairline-strong), var(--shadow-2); font: 500 12px/1.45 var(--font-mono); }
-.perf-t { margin: 0 0 6px; font-weight: 700; }
-.perf-pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
-.perf-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
-.perf-acts .btn { min-height: 36px; }
-.perf-hint, .perf-msg { margin: 6px 0 0; color: var(--ink-2); }
